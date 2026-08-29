@@ -6,8 +6,9 @@ import { Textarea } from "@/components/ui/Textarea";
 import { Select } from "@/components/ui/Select";
 import { Label } from "@/components/ui/Label";
 import { Button } from "@/components/ui/Button";
-import { addHeroImages, deleteHeroImage, moveHeroImage, updateHomepageSettings } from "@/lib/actions/settings";
+import { deleteHeroImage, moveHeroImage, updateHomepageSettings } from "@/lib/actions/settings";
 import { HERO_IMAGE_GUIDANCE } from "@/lib/constants";
+import { HeroImagesUploader } from "@/components/admin/HeroImagesUploader";
 
 export default async function AdminHomepagePage() {
   await requireAdmin();
@@ -78,18 +79,7 @@ export default async function AdminHomepagePage() {
           </ul>
         )}
 
-        <form action={addHeroImages} className="flex items-center gap-3">
-          <input
-            name="hero_images"
-            type="file"
-            accept=".jpg,.jpeg,.png,.webp"
-            multiple
-            className="block w-full text-sm text-ink-soft file:mr-4 file:rounded-md file:border file:border-line file:bg-paper file:px-3 file:py-2 file:text-sm file:font-semibold file:text-ink hover:file:bg-panel-2"
-          />
-          <Button type="submit" size="sm" variant="secondary">
-            Add
-          </Button>
-        </form>
+        <HeroImagesUploader />
 
         {(!heroImages || heroImages.length === 0) && homepage?.hero_image_url && (
           <p className="text-xs text-ink-soft">

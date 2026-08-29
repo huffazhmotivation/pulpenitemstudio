@@ -11,6 +11,7 @@ import {
   uploadFontImage,
 } from "@/lib/actions/fonts";
 import { MAX_GALLERY_IMAGES } from "@/lib/utils";
+import { compressImageForUpload } from "@/lib/image-compress";
 import type { FontImage } from "@/lib/types/database";
 import { Card, EmptyState, dashedUpload } from "./fields";
 import { SavedIndicator } from "@/components/admin/Toast";
@@ -35,19 +36,36 @@ export function GalleryTab({
   function handleCoverChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    const fd = new FormData();
-    fd.set("file", file);
-    cover.run(() => uploadCoverImage(fontId, fd), { successMessage: "Cover image updated." });
+    cover.run(
+      async () => {
+        const compressed = await compressImageForUpload(file);
+        const fd = new FormData();
+        fd.set("file", compressed);
+        await uploadCoverImage(fontId, fd);
+      },
+      { successMessage: "Cover image updated." }
+    );
     e.target.value = "";
   }
 
   function handleGalleryChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const fd = new FormData();
-    fd.set("file", file);
-    fd.set("alt_text", "");
-    upload.run(() => uploadFontImage(fontId, fd), { successMessage: "Image added to gallery." });
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
+    upload.run(
+      async () => {
+        for (const file of files) {
+          const compressed = await compressImageForUpload(file);
+          const fd = new FormData();
+          fd.set("file", compressed);
+          fd.set("alt_text", "");
+          await uploadFontImage(fontId, fd);
+        }
+      },
+      {
+        successMessage:
+          files.length > 1 ? `${files.length} images added to gallery.` : "Image added to gallery.",
+      }
+    );
     e.target.value = "";
   }
 
@@ -79,7 +97,8 @@ export function GalleryTab({
             />
             <p className="mt-2 text-[11px] text-ink-soft">
               Uploads instantly and replaces the current cover. You can also promote any gallery
-              image below.
+              image below. Large photos are automatically resized and compressed in your browser
+              before upload, so there&apos;s no need to shrink them yourself first.
             </p>
           </div>
         </div>
@@ -87,7 +106,7 @@ export function GalleryTab({
 
       <Card
         title="Gallery & specimen images"
-        description={`Up to ${MAX_GALLERY_IMAGES} images shown on the font's detail page, in this order.`}
+        description={`Up to ${MAX_GALLERY_IMAGES} images shown on the font's detail page, in this order. Select multiple files at once to add several — each is automatically resized and compressed before upload.`}
         action={
           <span className="flex items-center gap-3">
             <SavedIndicator state={upload.state} />
@@ -125,6 +144,7 @@ export function GalleryTab({
             ref={galleryInputRef}
             type="file"
             accept="image/*"
+            multiple
             className={dashedUpload}
             onChange={handleGalleryChange}
             disabled={upload.isPending}
