@@ -2,6 +2,7 @@ name = "pulpenitem-studio"
 main = ".open-next/worker.js"
 
 compatibility_date = "2024-09-23"
+
 compatibility_flags = [
   "nodejs_compat",
   "nodejs_compat_populate_process_env"
@@ -15,3 +16,5 @@ binding = "ASSETS"
 
 [vars]
 NEXT_PUBLIC_SITE_URL = "https://pulpenitemstudio.huffazh-motivation.workers.dev"
+NEXT_PUBLIC_SUPABASE_URL = "https://sizofqulcvhxgsjhpmh.supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY = "sb_publishable_qhLqJi-5_4Wabjh75LC0tg_SS5PQJnh"
