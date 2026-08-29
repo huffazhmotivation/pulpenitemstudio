@@ -1,26 +1,35 @@
 import "server-only";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 
-/**
- * Privileged Supabase client using the SERVICE ROLE key. This bypasses
- * Row Level Security entirely, so it must:
- *   1. Never be imported into any Client Component or exposed to the
- *      browser (the `server-only` import above enforces this at build
- *      time).
- *   2. Only ever be called from code paths that have already verified
- *      the current user is a signed-in admin (see requireAdmin() in
- *      src/lib/auth.ts), i.e. from Server Actions / Route Handlers
- *      under src/app/admin or src/app/api/admin.
- */
-export function createAdminClient() {
-  return createSupabaseClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      },
+function getServerEnv(name: string): string {
+  // Local Next.js
+  const localValue = process.env[name];
+  if (localValue) return localValue;
+
+  // Cloudflare Workers / OpenNext
+  try {
+    const env = getCloudflareContext().env as Record<string, unknown>;
+    const value = env[name];
+
+    if (typeof value === "string" && value.length > 0) {
+      return value;
     }
-  );
+  } catch {
+    // Fall through to explicit error below
+  }
+
+  throw new Error(`Missing required environment variable: ${name}`);
+}
+
+export function createAdminClient() {
+  const supabaseUrl = getServerEnv("NEXT_PUBLIC_SUPABASE_URL");
+  const serviceRoleKey = getServerEnv("SUPABASE_SERVICE_ROLE_KEY");
+
+  return createSupabaseClient(supabaseUrl, serviceRoleKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
 }
