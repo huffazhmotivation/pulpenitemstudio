@@ -33,9 +33,15 @@ export function CategoryGrid({ categories }: { categories: CategoryWithPreview[]
               </span>
             </div>
           )}
-          <div className="relative z-10 flex items-end justify-between gap-2 bg-ink/65 px-4 py-3.5">
-            <span className="font-display text-sm font-semibold text-white">{cat.name}</span>
-            <span className="text-xs text-white/80">{cat.fontCount}</span>
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-20 bg-gradient-to-t from-black/55 to-transparent" />
+          <div
+            className="relative z-10 flex items-end justify-between gap-2 border-t border-white/15 bg-white/10 px-4 py-3.5 backdrop-blur-md backdrop-saturate-150"
+            style={{ boxShadow: "inset 0 1px 0 0 rgba(255,255,255,0.18)" }}
+          >
+            <span className="font-display text-sm font-semibold text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.7)]">
+              {cat.name}
+            </span>
+            <span className="text-xs text-white/85 drop-shadow-[0_1px_3px_rgba(0,0,0,0.7)]">{cat.fontCount}</span>
           </div>
         </Link>
       ))}
