@@ -24,6 +24,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
   const count = slides.length;
 
   const [index, setIndex] = useState(0);
+  const [cycle, setCycle] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const resumeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -39,6 +40,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
     (i: number) => {
       if (count === 0) return;
       setIndex(((i % count) + count) % count);
+      setCycle((c) => c + 1);
     },
     [count]
   );
@@ -57,7 +59,10 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
 
   useEffect(() => {
     if (count <= 1 || isPaused) return;
-    const id = setInterval(() => setIndex((i) => (i + 1) % count), AUTOPLAY_MS);
+    const id = setInterval(() => {
+      setIndex((i) => (i + 1) % count);
+      setCycle((c) => c + 1);
+    }, AUTOPLAY_MS);
     return () => clearInterval(id);
   }, [count, isPaused]);
 
@@ -105,20 +110,33 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
         style={{
           width: `${count * 100}%`,
           transform: `translateX(calc(${-index * (100 / count)}% + ${dragPercent}%))`,
-          transition: dragState.current.dragging ? "none" : "transform 600ms cubic-bezier(0.65,0,0.35,1)",
+          transition: dragState.current.dragging ? "none" : "transform 750ms cubic-bezier(0.16,1,0.3,1)",
         }}
       >
         {slides.map((slide, i) => (
-          <div key={slide.id} className="relative h-full shrink-0" style={{ width: `${100 / count}%` }}>
-            <Image
-              src={slide.imageUrl}
-              alt={slide.alt}
-              fill
-              draggable={false}
-              className="pointer-events-none object-cover"
-              sizes="1440px"
-              priority={i === 0}
-            />
+          <div key={slide.id} className="relative h-full shrink-0 overflow-hidden" style={{ width: `${100 / count}%` }}>
+            <div
+              key={i === index ? cycle : undefined}
+              className="absolute inset-0"
+              style={
+                i === index
+                  ? {
+                      animation: `heroKenBurns ${AUTOPLAY_MS + 600}ms ease-out forwards`,
+                      animationPlayState: isPaused ? "paused" : "running",
+                    }
+                  : undefined
+              }
+            >
+              <Image
+                src={slide.imageUrl}
+                alt={slide.alt}
+                fill
+                draggable={false}
+                className="pointer-events-none object-cover"
+                sizes="100vw"
+                priority={i === 0}
+              />
+            </div>
           </div>
         ))}
       </div>

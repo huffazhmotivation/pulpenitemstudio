@@ -29,6 +29,18 @@
       width: 100%;
     }
   }
+
+  /* Slow Ken Burns zoom applied to the active hero slide — gives the
+     autoplay a more contemporary, editorial feel instead of a static
+     photo sitting behind the caption. */
+  @keyframes heroKenBurns {
+    from {
+      transform: scale(1);
+    }
+    to {
+      transform: scale(1.08);
+    }
+  }
 }
 
 @layer components {

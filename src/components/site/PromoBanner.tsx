@@ -41,7 +41,7 @@ export function PromoBanner({
   if (gallerySlides.length > 0) {
     return (
       <section className="border-b border-line bg-paper-dim">
-        <div className="relative mx-auto h-[440px] max-w-grid overflow-hidden sm:h-[480px] md:h-[520px] lg:h-[580px]">
+        <div className="relative h-[440px] w-full overflow-hidden sm:h-[480px] md:h-[520px] lg:h-[580px]">
           <HeroSlider slides={gallerySlides} />
           <div
             aria-hidden
@@ -60,7 +60,7 @@ export function PromoBanner({
             }}
           />
 
-          <div className="relative z-10 flex h-full items-end px-6 pb-14 pt-10 sm:items-center sm:pb-10 md:px-10">
+          <div className="relative z-10 mx-auto flex h-full max-w-grid items-end px-6 pb-14 pt-10 sm:items-center sm:pb-10 md:px-10">
             <div className="max-w-md">
               <p className="eyebrow-accent mb-3">{homepage.hero_eyebrow}</p>
               <h1 className="font-display text-ink [font-size:clamp(1.9rem,4.2vw,3rem)] leading-[1.05] tracking-tight break-words">
@@ -117,7 +117,7 @@ export function PromoBanner({
 
   return (
     <section className="border-b border-line bg-paper-dim">
-      <div className="relative mx-auto h-[440px] max-w-grid overflow-hidden sm:h-[480px] md:h-[520px] lg:h-[580px]">
+      <div className="relative h-[440px] w-full overflow-hidden sm:h-[480px] md:h-[520px] lg:h-[580px]">
         {/* Background: auto-sliding, swipeable product gallery */}
         <HeroProductSlider fonts={sliderFonts} />
 
@@ -142,8 +142,10 @@ export function PromoBanner({
         />
 
         {/* Fixed caption — stays put on the left regardless of which
-            product photo is showing behind it. */}
-        <div className="relative z-10 flex h-full items-end px-6 pb-14 pt-10 sm:items-center sm:pb-10 md:px-10">
+            product photo is showing behind it. Inner content is capped
+            at the site's max-w-grid so it still lines up with the rest
+            of the page even though the photo itself bleeds edge-to-edge. */}
+        <div className="relative z-10 mx-auto flex h-full max-w-grid items-end px-6 pb-14 pt-10 sm:items-center sm:pb-10 md:px-10">
           <div className="max-w-md">
             <div className="mb-3 flex flex-wrap items-center gap-2">
               <p className="eyebrow-accent">{homepage.hero_eyebrow}</p>
