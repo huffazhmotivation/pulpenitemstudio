@@ -14,4 +14,4 @@ binding = "ASSETS"
 # id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 
 [vars]
-NEXT_PUBLIC_SITE_URL = "https://pulpenitem.studio"
+NEXT_PUBLIC_SITE_URL = "https://pulpenitemstudio.huffazh-motivation.workers.dev"
