@@ -1,30 +1,34 @@
 import "server-only";
+
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 
-function getServerEnv(name: string): string {
-  // Local Next.js
+type CloudflareEnv = {
+  NEXT_PUBLIC_SUPABASE_URL?: string;
+  SUPABASE_SERVICE_ROLE_KEY?: string;
+};
+
+function getEnv(name: keyof CloudflareEnv): string {
+  // Local development
   const localValue = process.env[name];
   if (localValue) return localValue;
 
   // Cloudflare Workers / OpenNext
   try {
-    const env = getCloudflareContext().env as Record<string, unknown>;
-    const value = env[name];
+    const { env } = getCloudflareContext();
+    const cloudflareValue = (env as CloudflareEnv)[name];
 
-    if (typeof value === "string" && value.length > 0) {
-      return value;
-    }
+    if (cloudflareValue) return cloudflareValue;
   } catch {
-    // Fall through to explicit error below
+    // Ignore and throw explicit error below
   }
 
   throw new Error(`Missing required environment variable: ${name}`);
 }
 
 export function createAdminClient() {
-  const supabaseUrl = getServerEnv("NEXT_PUBLIC_SUPABASE_URL");
-  const serviceRoleKey = getServerEnv("SUPABASE_SERVICE_ROLE_KEY");
+  const supabaseUrl = getEnv("NEXT_PUBLIC_SUPABASE_URL");
+  const serviceRoleKey = getEnv("SUPABASE_SERVICE_ROLE_KEY");
 
   return createSupabaseClient(supabaseUrl, serviceRoleKey, {
     auth: {
