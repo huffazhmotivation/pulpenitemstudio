@@ -45,8 +45,7 @@
   /* Product gallery slide transition — the incoming image pushes in
      from the direction of travel while scaling up from 94% and
      fading in (instead of a flat scroll), so switching specimen
-     images feels a bit more alive. Paired with .gallery-sweep-fx for
-     a quick signal-colored light sweep on arrival. */
+     images feels a bit more alive. */
   @keyframes gallerySlideInRight {
     from {
       transform: translateX(40%) scale(0.94);
@@ -85,14 +84,6 @@
     to {
       transform: translateX(40%) scale(0.94);
       opacity: 0;
-    }
-  }
-  @keyframes gallerySweepFx {
-    from {
-      transform: translateX(-140%) skewX(-10deg);
-    }
-    to {
-      transform: translateX(140%) skewX(-10deg);
     }
   }
 }
@@ -316,18 +307,4 @@
   to {
     transform: translateX(120%);
   }
-}
-
-/* Diagonal signal-colored light streak used as an arrival flourish on
-   the product gallery's incoming slide (see gallerySweepFx keyframe
-   and ProductGallery.tsx). */
-.gallery-sweep-fx {
-  position: absolute;
-  inset: -15% -8%;
-  background: linear-gradient(
-    100deg,
-    transparent 42%,
-    rgba(163, 230, 53, 0.4) 50%,
-    transparent 58%
-  );
 }

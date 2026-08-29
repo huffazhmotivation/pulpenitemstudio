@@ -92,15 +92,6 @@ export function ProductGallery({ images, fontName }: { images: FontImage[]; font
           />
         </div>
 
-        {transition && (
-          <div key={`sweep-${active}`} aria-hidden className="pointer-events-none absolute inset-0 z-10">
-            <div
-              className="gallery-sweep-fx"
-              style={{ animation: `gallerySweepFx ${TRANSITION_MS}ms ease-out forwards` }}
-            />
-          </div>
-        )}
-
         {count > 1 && (
           <div className="absolute bottom-3 right-3 z-20 rounded-full bg-ink/80 px-3 py-1 text-xs font-semibold text-white">
             {active + 1} / {count}
