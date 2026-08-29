@@ -143,34 +143,38 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
 
       {count > 1 && (
         <>
-          <button
-            type="button"
-            aria-label="Previous slide"
-            onClick={(e) => {
-              e.stopPropagation();
-              pauseThenResume();
-              prev();
-            }}
-            className="absolute left-3 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/30 text-ink opacity-0 backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100 md:left-5"
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M10 3L5 8l5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            aria-label="Next slide"
-            onClick={(e) => {
-              e.stopPropagation();
-              pauseThenResume();
-              next();
-            }}
-            className="absolute right-3 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/30 text-ink opacity-0 backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100 md:right-5"
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
+          <div className="absolute inset-y-0 left-3 z-20 flex items-center md:left-5">
+            <button
+              type="button"
+              aria-label="Previous slide"
+              onClick={(e) => {
+                e.stopPropagation();
+                pauseThenResume();
+                prev();
+              }}
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-black/30 text-ink opacity-0 backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M10 3L5 8l5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          </div>
+          <div className="absolute inset-y-0 right-3 z-20 flex items-center md:right-5">
+            <button
+              type="button"
+              aria-label="Next slide"
+              onClick={(e) => {
+                e.stopPropagation();
+                pauseThenResume();
+                next();
+              }}
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-black/30 text-ink opacity-0 backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          </div>
 
           {/* Minimalist story-style progress bar — doubles as slide picker */}
           <div className="absolute inset-x-4 bottom-4 z-20 flex gap-1.5 md:inset-x-6 md:bottom-5">
