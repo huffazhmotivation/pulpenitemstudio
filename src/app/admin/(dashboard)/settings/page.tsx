@@ -8,7 +8,7 @@ import { updateSiteSettings } from "@/lib/actions/settings";
 
 export default async function AdminSettingsPage() {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
   const { data: settings } = await db.from("site_settings").select("*").eq("id", 1).single();
 
   return (

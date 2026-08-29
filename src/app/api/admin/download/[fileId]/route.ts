@@ -17,7 +17,7 @@ export async function GET(
   await requireAdmin();
   const { fileId } = await params;
 
-  const db = createAdminClient();
+  const db = await createAdminClient();
   const { data: file, error } = await db
     .from("font_files")
     .select("storage_path, file_type")

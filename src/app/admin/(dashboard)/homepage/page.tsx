@@ -11,7 +11,7 @@ import { HERO_IMAGE_GUIDANCE } from "@/lib/constants";
 
 export default async function AdminHomepagePage() {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
   const [{ data: homepage }, { data: fonts }, { data: heroImages }] = await Promise.all([
     db.from("homepage_settings").select("*").eq("id", 1).single(),
     db.from("fonts").select("id, name").order("name"),

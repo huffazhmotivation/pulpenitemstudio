@@ -8,7 +8,7 @@ import { BUCKETS } from "@/lib/storage";
 
 export async function updateSiteSettings(formData: FormData) {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
 
   const { error } = await db
     .from("site_settings")
@@ -30,7 +30,7 @@ export async function updateSiteSettings(formData: FormData) {
 
 export async function addHeroImages(formData: FormData) {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
 
   const files = formData.getAll("hero_images").filter((f): f is File => f instanceof File && f.size > 0);
   if (files.length === 0) return;
@@ -62,7 +62,7 @@ export async function addHeroImages(formData: FormData) {
 
 export async function deleteHeroImage(id: string) {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
 
   const { error } = await db.from("hero_images").delete().eq("id", id);
   if (error) throw new Error(error.message);
@@ -73,7 +73,7 @@ export async function deleteHeroImage(id: string) {
 
 export async function moveHeroImage(id: string, direction: "up" | "down") {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
 
   const { data: images, error: fetchError } = await db
     .from("hero_images")
@@ -100,7 +100,7 @@ export async function moveHeroImage(id: string, direction: "up" | "down") {
 
 export async function updateHomepageSettings(formData: FormData) {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
 
   const heroFontId = formData.get("hero_preview_font_id");
 

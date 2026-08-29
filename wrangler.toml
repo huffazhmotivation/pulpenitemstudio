@@ -1,19 +1,17 @@
 name = "pulpenitem-studio"
 main = ".open-next/worker.js"
-
 compatibility_date = "2024-09-23"
-compatibility_flags = [
-  "nodejs_compat",
-  "nodejs_compat_populate_process_env"
-]
-
-keep_vars = true
+compatibility_flags = ["nodejs_compat"]
 
 [assets]
 directory = ".open-next/assets"
 binding = "ASSETS"
 
+# Optional: bind a KV namespace for Next.js incremental cache.
+# Create with: wrangler kv namespace create NEXT_CACHE
+# [[kv_namespaces]]
+# binding = "NEXT_CACHE_WORKERS_KV"
+# id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
 [vars]
-NEXT_PUBLIC_SITE_URL = "https://pulpenitemstudio.huffazh-motivation.workers.dev"
-NEXT_PUBLIC_SUPABASE_URL = "https://sizofqulcvhxgsjhpmh.supabase.co"
-NEXT_PUBLIC_SUPABASE_ANON_KEY = "sb_publishable_qhLqJi-5_4Wabjh75LC0tg_SS5PQJnh"
+NEXT_PUBLIC_SITE_URL = "https://pulpenitem.studio"

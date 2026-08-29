@@ -7,7 +7,7 @@ import { createLicense, deleteLicense, updateLicense } from "@/lib/actions/taxon
 
 export default async function AdminLicensesPage() {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
   const { data: licenses } = await db.from("licenses").select("*").order("sort_order");
 
   return (

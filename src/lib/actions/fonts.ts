@@ -35,7 +35,7 @@ function isoOrNull(value: FormDataEntryValue | null): string | null {
 
 export async function createFont(formData: FormData) {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
 
   const name = String(formData.get("name") ?? "").trim();
   const slugInput = String(formData.get("slug") ?? "").trim();
@@ -82,7 +82,7 @@ export async function createFont(formData: FormData) {
 
 export async function updateFont(fontId: string, formData: FormData) {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
 
   const name = String(formData.get("name") ?? "").trim();
   const slugInput = String(formData.get("slug") ?? "").trim();
@@ -127,7 +127,7 @@ export async function updateFont(fontId: string, formData: FormData) {
 
 export async function deleteFont(fontId: string) {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
 
   // Best-effort: remove associated storage objects first.
   const { data: files } = await db
@@ -163,7 +163,7 @@ export async function deleteFont(fontId: string) {
 
 export async function addFontStyle(fontId: string, formData: FormData) {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
 
   const { data: existing } = await db
     .from("font_styles")
@@ -188,7 +188,7 @@ export async function addFontStyle(fontId: string, formData: FormData) {
 
 export async function deleteFontStyle(fontId: string, styleId: string) {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
   const { error } = await db.from("font_styles").delete().eq("id", styleId);
   if (error) throw new Error(error.message);
   revalidatePath(`/admin/fonts/${fontId}`);
@@ -200,7 +200,7 @@ export async function deleteFontStyle(fontId: string, styleId: string) {
 
 export async function uploadFontFile(fontId: string, formData: FormData) {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
 
   const file = formData.get("file") as File | null;
   const fileType = String(formData.get("file_type") ?? "preview") as FileType;
@@ -242,7 +242,7 @@ export async function uploadFontFile(fontId: string, formData: FormData) {
 
 export async function deleteFontFile(fontId: string, fileId: string) {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
 
   const { data: file } = await db
     .from("font_files")
@@ -267,7 +267,7 @@ export async function deleteFontFile(fontId: string, fileId: string) {
 
 export async function uploadFontImage(fontId: string, formData: FormData) {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
 
   const file = formData.get("file") as File | null;
   if (!file || file.size === 0) throw new Error("No file provided");
@@ -310,7 +310,7 @@ export async function uploadFontImage(fontId: string, formData: FormData) {
 
 export async function deleteFontImage(fontId: string, imageId: string) {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
 
   const { data: image } = await db
     .from("font_images")
@@ -331,7 +331,7 @@ export async function deleteFontImage(fontId: string, imageId: string) {
 
 export async function updateFontImageAlt(fontId: string, imageId: string, formData: FormData) {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
 
   const { error } = await db
     .from("font_images")
@@ -345,7 +345,7 @@ export async function updateFontImageAlt(fontId: string, imageId: string, formDa
 /** Swaps sort_order with the previous/next image so gallery order can be nudged up/down. */
 export async function moveFontImage(fontId: string, imageId: string, direction: "up" | "down") {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
 
   const { data: images } = await db
     .from("font_images")
@@ -373,7 +373,7 @@ export async function moveFontImage(fontId: string, imageId: string, direction: 
 /** Promotes an existing gallery image to be the product's cover image (used on cards). */
 export async function setFontImageAsCover(fontId: string, imageId: string) {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
 
   const { data: image } = await db
     .from("font_images")
@@ -394,7 +394,7 @@ export async function setFontImageAsCover(fontId: string, imageId: string) {
 
 export async function uploadCoverImage(fontId: string, formData: FormData) {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
 
   const file = formData.get("file") as File | null;
   if (!file || file.size === 0) throw new Error("No file provided");
@@ -428,7 +428,7 @@ export async function setLicensePrice(
   currency: string
 ) {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
 
   const { error } = await db
     .from("license_prices")
@@ -444,7 +444,7 @@ export async function setLicensePrice(
 
 export async function removeLicensePrice(fontId: string, licenseId: string) {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
   const { error } = await db
     .from("license_prices")
     .delete()

@@ -7,7 +7,7 @@ import { formatPrice } from "@/lib/utils";
 
 export default async function AdminFontsPage() {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
 
   const { data: fonts } = await db
     .from("fonts")

@@ -10,7 +10,7 @@ export default async function EditFontPage({
 }) {
   await requireAdmin();
   const { id } = await params;
-  const db = createAdminClient();
+  const db = await createAdminClient();
 
   const [{ data: font }, { data: categories }, { data: licenses }] = await Promise.all([
     db

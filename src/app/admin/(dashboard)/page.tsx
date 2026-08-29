@@ -5,7 +5,7 @@ import { ButtonLink } from "@/components/ui/Button";
 
 export default async function AdminHomePage() {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
 
   const [{ count: totalFonts }, { count: published }, { count: drafts }, { count: categories }] =
     await Promise.all([

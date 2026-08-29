@@ -11,7 +11,7 @@ import { slugify } from "@/lib/utils";
 
 export async function createCategory(formData: FormData) {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
   const name = String(formData.get("name") ?? "").trim();
   const { error } = await db.from("categories").insert({
     name,
@@ -26,7 +26,7 @@ export async function createCategory(formData: FormData) {
 
 export async function updateCategory(id: string, formData: FormData) {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
   const name = String(formData.get("name") ?? "").trim();
   const { error } = await db
     .from("categories")
@@ -44,7 +44,7 @@ export async function updateCategory(id: string, formData: FormData) {
 
 export async function deleteCategory(id: string) {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
   const { error } = await db.from("categories").delete().eq("id", id);
   if (error) throw new Error(error.message);
   revalidatePath("/admin/categories");
@@ -57,7 +57,7 @@ export async function deleteCategory(id: string) {
 
 export async function createLicense(formData: FormData) {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
   const name = String(formData.get("name") ?? "").trim();
   const { error } = await db.from("licenses").insert({
     name,
@@ -72,7 +72,7 @@ export async function createLicense(formData: FormData) {
 
 export async function updateLicense(id: string, formData: FormData) {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
   const name = String(formData.get("name") ?? "").trim();
   const { error } = await db
     .from("licenses")
@@ -90,7 +90,7 @@ export async function updateLicense(id: string, formData: FormData) {
 
 export async function deleteLicense(id: string) {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
   const { error } = await db.from("licenses").delete().eq("id", id);
   if (error) throw new Error(error.message);
   revalidatePath("/admin/licenses");

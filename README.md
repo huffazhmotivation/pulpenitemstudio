@@ -124,6 +124,19 @@ namespace (`wrangler kv namespace create NEXT_CACHE`), uncomment the
 to wire it into `open-next.config.ts`. The app works correctly without
 this — it just means Next's data cache won't persist across cold starts.
 
+**Note on env vars at runtime:** on Cloudflare Workers, `process.env` is
+not reliably populated with your `vars`/secrets — `createAdminClient()`
+(`src/lib/supabase/admin.ts`) reads them via
+`getCloudflareContext({ async: true }).env` instead, falling back to
+`process.env` for local `next dev`. If you add other server code that
+needs `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, or
+`SUPABASE_SERVICE_ROLE_KEY` on the Workers runtime, follow the same
+pattern rather than reading `process.env` directly. Make sure all three
+are set in Cloudflare (`wrangler.toml [vars]` for the public ones,
+`wrangler secret put SUPABASE_SERVICE_ROLE_KEY` for the private one) —
+and redeploy after adding/changing them, since `NEXT_PUBLIC_*` values are
+also inlined into the client bundle at build time.
+
 ## 5. What's deliberately *not* built yet (structured for later)
 
 - **Cart / checkout** — `fonts`, `license_prices`, and `font_files` are

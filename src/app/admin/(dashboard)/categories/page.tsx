@@ -7,7 +7,7 @@ import { createCategory, deleteCategory, updateCategory } from "@/lib/actions/ta
 
 export default async function AdminCategoriesPage() {
   await requireAdmin();
-  const db = createAdminClient();
+  const db = await createAdminClient();
   const { data: categories } = await db.from("categories").select("*").order("sort_order");
 
   return (
