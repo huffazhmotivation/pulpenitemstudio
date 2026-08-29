@@ -28,7 +28,8 @@ export function FontCard({ font }: { font: FontWithRelations }) {
   return (
     <Link
       href={`/fonts/${font.slug}`}
-      className="group flex flex-col overflow-hidden rounded-lg border border-line bg-panel/80 backdrop-blur-sm transition-all duration-200 hover:border-signal/40 hover:bg-white/[0.03] hover:shadow-[0_8px_28px_-8px_rgba(163,230,53,0.25)]"
+      className="group relative flex flex-col overflow-hidden rounded-lg border border-white/10 bg-white/[0.04] backdrop-blur-xl transition-all duration-200 hover:border-signal/40 hover:bg-white/[0.07] hover:shadow-[0_8px_28px_-8px_rgba(163,230,53,0.25)]"
+      style={{ boxShadow: "inset 0 1px 0 0 rgba(255,255,255,0.06), 0 8px 32px -12px rgba(0,0,0,0.5)" }}
     >
       {/* Product image — dominant, image-first */}
       <div className="scan-sweep relative aspect-[4/3] w-full bg-paper-dim">
@@ -66,7 +67,7 @@ export function FontCard({ font }: { font: FontWithRelations }) {
       </div>
 
       {/* Metadata footer */}
-      <div className="flex flex-1 flex-col gap-2 px-4 py-4">
+      <div className="flex flex-1 flex-col gap-2 border-t border-white/10 bg-white/[0.03] px-4 py-4 backdrop-blur-sm">
         <div className="min-w-0">
           <p className="eyebrow truncate">
             {font.category?.name ?? "Uncategorised"} · {styleCount} style{styleCount === 1 ? "" : "s"}
