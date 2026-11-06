@@ -2,6 +2,11 @@ name = "pulpenitem-studio"
 main = ".open-next/worker.js"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+
+routes = [
+  { pattern = "pulpenitem.my.id", custom_domain = true },
+]
 
 [assets]
 directory = ".open-next/assets"
@@ -23,6 +28,6 @@ binding = "MEDIA"
 bucket_name = "pulpenitem-media"
 
 [vars]
-NEXT_PUBLIC_SITE_URL = "https://pulpenitem.studio"
+NEXT_PUBLIC_SITE_URL = "https://pulpenitem.my.id"
 
 # Secret (never commit): npx wrangler secret put AUTH_SECRET

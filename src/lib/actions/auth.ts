@@ -3,7 +3,8 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/db";
-import { verifyPassword } from "@/lib/password";
+import { hashPassword, verifyPassword } from "@/lib/password";
+import { requireAdmin } from "@/lib/auth";
 import { SESSION_COOKIE, SESSION_MAX_AGE, createSessionToken } from "@/lib/session";
 
 export async function signIn(formData: FormData) {
@@ -39,4 +40,31 @@ export async function signOut() {
   const store = await cookies();
   store.delete(SESSION_COOKIE);
   redirect("/admin/login");
+}
+
+export type ChangePasswordState = { ok: boolean; message: string } | null;
+
+export async function changePassword(_prev: ChangePasswordState, formData: FormData): Promise<ChangePasswordState> {
+  const admin = await requireAdmin();
+  const current = String(formData.get("current") ?? "");
+  const next = String(formData.get("next") ?? "");
+  const confirm = String(formData.get("confirm") ?? "");
+
+  if (next.length < 10) return { ok: false, message: "New password must be at least 10 characters." };
+  if (next !== confirm) return { ok: false, message: "New password and confirmation do not match." };
+  if (next === current) return { ok: false, message: "New password must be different from the current one." };
+
+  const db = await createAdminClient();
+  const { data: row } = await db.from("admin_profiles").select("password_hash").eq("id", admin.id).maybeSingle();
+  if (!(await verifyPassword(current, row?.password_hash))) {
+    return { ok: false, message: "Current password is incorrect." };
+  }
+
+  const { error } = await db
+    .from("admin_profiles")
+    .update({ password_hash: await hashPassword(next) })
+    .eq("id", admin.id);
+  if (error) return { ok: false, message: "Could not save the new password. Try again." };
+
+  return { ok: true, message: "Password updated." };
 }

@@ -5,9 +5,10 @@ import { Textarea } from "@/components/ui/Textarea";
 import { Label } from "@/components/ui/Label";
 import { Button } from "@/components/ui/Button";
 import { updateSiteSettings } from "@/lib/actions/settings";
+import { ChangePasswordForm } from "@/components/admin/ChangePasswordForm";
 
 export default async function AdminSettingsPage() {
-  await requireAdmin();
+  const admin = await requireAdmin();
   const db = await createAdminClient();
   const { data: settings } = await db.from("site_settings").select("*").eq("id", 1).single();
 
@@ -59,6 +60,12 @@ export default async function AdminSettingsPage() {
         </div>
         <Button type="submit">Save settings</Button>
       </form>
+
+      <div className="mt-10 max-w-xl">
+        <h2 className="mb-1 font-display text-xl text-ink">Change password</h2>
+        <p className="mb-4 text-sm text-ink-soft">Signed in as {admin.email}.</p>
+        <ChangePasswordForm />
+      </div>
     </div>
   );
 }
