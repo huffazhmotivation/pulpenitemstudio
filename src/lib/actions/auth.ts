@@ -42,9 +42,7 @@ export async function signOut() {
   redirect("/admin/login");
 }
 
-export type ChangePasswordState = { ok: boolean; message: string } | null;
-
-export async function changePassword(_prev: ChangePasswordState, formData: FormData): Promise<ChangePasswordState> {
+export async function changePassword(formData: FormData): Promise<{ ok: boolean; message: string }> {
   const admin = await requireAdmin();
   const current = String(formData.get("current") ?? "");
   const next = String(formData.get("next") ?? "");
