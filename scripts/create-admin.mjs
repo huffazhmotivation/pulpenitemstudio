@@ -19,28 +19,21 @@ if (!email) {
 }
 
 // Ask for the password without echoing it, so it never lands in shell history or chat.
-async function promptHidden(label) {
+import { createInterface } from "node:readline";
+function promptHidden(label) {
   if (!process.stdin.isTTY) throw new Error("No terminal available: pass the password as an argument.");
-  process.stdout.write(label);
-  process.stdin.setRawMode(true);
-  process.stdin.resume();
-  process.stdin.setEncoding("utf8");
   return new Promise((resolve) => {
-    let value = "";
-    process.stdin.on("data", function onData(ch) {
-      for (const c of ch) {
-        if (c === "\r" || c === "\n") {
-          process.stdin.setRawMode(false);
-          process.stdin.pause();
-          process.stdin.removeListener("data", onData);
-          process.stdout.write("\n");
-          return resolve(value);
-        }
-        if (c === "\u0003") process.exit(130);
-        if (c === "\u007f") value = value.slice(0, -1);
-        else value += c;
-      }
+    const rl = createInterface({ input: process.stdin, output: process.stdout, terminal: true });
+    let muted = false;
+    rl._writeToOutput = (str) => {
+      if (!muted) process.stdout.write(str);
+    };
+    rl.question(label, (answer) => {
+      rl.close();
+      process.stdout.write("\n");
+      resolve(answer);
     });
+    muted = true;
   });
 }
 

@@ -20,3 +20,4 @@ npm-debug.log*
 .dev.vars
 .wrangler
 migration-out
+admin-password.txt
