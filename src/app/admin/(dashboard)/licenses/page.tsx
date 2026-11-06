@@ -1,5 +1,5 @@
 import { requireAdmin } from "@/lib/auth";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient } from "@/lib/db";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Button } from "@/components/ui/Button";
@@ -20,7 +20,7 @@ export default async function AdminLicensesPage() {
       </p>
 
       <div className="space-y-4 mb-12">
-        {(licenses ?? []).map((lic) => (
+        {(licenses ?? []).map((lic: any) => (
           <form
             key={lic.id}
             action={updateLicense.bind(null, lic.id)}

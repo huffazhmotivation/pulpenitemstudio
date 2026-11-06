@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { nanoid } from "nanoid";
 import { requireAdmin } from "@/lib/auth";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient } from "@/lib/db";
 import { BUCKETS } from "@/lib/storage";
 
 export async function updateSiteSettings(formData: FormData) {
@@ -82,7 +82,7 @@ export async function moveHeroImage(id: string, direction: "up" | "down") {
   if (fetchError) throw new Error(fetchError.message);
   if (!images) return;
 
-  const index = images.findIndex((img) => img.id === id);
+  const index = images.findIndex((img: any) => img.id === id);
   const swapWith = direction === "up" ? index - 1 : index + 1;
   if (index === -1 || swapWith < 0 || swapWith >= images.length) return;
 

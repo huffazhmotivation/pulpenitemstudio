@@ -13,8 +13,6 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@supabase/ssr": "^0.5.2",
-    "@supabase/supabase-js": "^2.45.4",
     "clsx": "^2.1.1",
     "nanoid": "^5.0.7",
     "next": "^15.5.29",
@@ -23,6 +21,7 @@
     "server-only": "^0.0.1"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261106.1",
     "@opennextjs/cloudflare": "^1.20.16",
     "@types/node": "^20.14.0",
     "@types/react": "^18.3.3",

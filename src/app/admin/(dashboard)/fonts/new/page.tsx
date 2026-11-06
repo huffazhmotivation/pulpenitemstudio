@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient } from "@/lib/db";
 import { FontForm } from "@/components/admin/FontForm";
 import { createFont } from "@/lib/actions/fonts";
 

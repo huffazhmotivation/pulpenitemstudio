@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient } from "@/lib/db";
 import { FontEditorShell } from "@/components/admin/font-editor/FontEditorShell";
 
 export default async function EditFontPage({

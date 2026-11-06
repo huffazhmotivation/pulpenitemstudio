@@ -4,6 +4,9 @@ import { CartProvider } from "@/lib/cart/CartContext";
 import { getGameFonts, getSiteSettings } from "@/lib/queries";
 import { BUCKETS, publicStorageUrl } from "@/lib/storage";
 
+// Data comes from D1 at request time, so never prerender at build.
+export const dynamic = "force-dynamic";
+
 export default async function SiteLayout({
   children,
 }: {

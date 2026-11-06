@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { requireAdmin } from "@/lib/auth";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient } from "@/lib/db";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Select } from "@/components/ui/Select";
@@ -37,7 +37,7 @@ export default async function AdminHomepagePage() {
 
         {heroImages && heroImages.length > 0 && (
           <ul className="space-y-2">
-            {heroImages.map((img, i) => (
+            {heroImages.map((img: any, i: number) => (
               <li
                 key={img.id}
                 className="flex items-center gap-3 rounded-md border border-line bg-paper p-2"
@@ -135,7 +135,7 @@ export default async function AdminHomepagePage() {
           <Label htmlFor="hero_preview_font_id">Hero live-preview font (used when no hero image is set)</Label>
           <Select id="hero_preview_font_id" name="hero_preview_font_id" defaultValue={homepage?.hero_preview_font_id ?? ""}>
             <option value="">— Use first featured font —</option>
-            {(fonts ?? []).map((f) => (
+            {(fonts ?? []).map((f: any) => (
               <option key={f.id} value={f.id}>{f.name}</option>
             ))}
           </Select>

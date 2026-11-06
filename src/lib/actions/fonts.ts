@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { nanoid } from "nanoid";
 import { requireAdmin } from "@/lib/auth";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient } from "@/lib/db";
 import { slugify, MAX_GALLERY_IMAGES } from "@/lib/utils";
 import { BUCKETS } from "@/lib/storage";
 import type { FileFormat, FileType } from "@/lib/types/database";
@@ -137,14 +137,14 @@ export async function deleteFont(fontId: string) {
   const { data: images } = await db.from("font_images").select("image_url").eq("font_id", fontId);
 
   if (files?.length) {
-    const previewPaths = files.filter((f) => f.file_type === "preview").map((f) => f.storage_path);
-    const masterPaths = files.filter((f) => f.file_type === "master").map((f) => f.storage_path);
+    const previewPaths = files.filter((f: any) => f.file_type === "preview").map((f: any) => f.storage_path);
+    const masterPaths = files.filter((f: any) => f.file_type === "master").map((f: any) => f.storage_path);
     if (previewPaths.length) await db.storage.from(BUCKETS.previews).remove(previewPaths);
     if (masterPaths.length) await db.storage.from(BUCKETS.masters).remove(masterPaths);
   }
   if (images?.length) {
     const paths = images
-      .map((i) => i.image_url.split(`${BUCKETS.images}/`)[1])
+      .map((i: any) => i.image_url.split(`${BUCKETS.images}/`)[1])
       .filter(Boolean) as string[];
     if (paths.length) await db.storage.from(BUCKETS.images).remove(paths);
   }
@@ -354,7 +354,7 @@ export async function moveFontImage(fontId: string, imageId: string, direction: 
     .order("sort_order", { ascending: true });
   if (!images) return;
 
-  const index = images.findIndex((i) => i.id === imageId);
+  const index = images.findIndex((i: any) => i.id === imageId);
   if (index === -1) return;
   const swapIndex = direction === "up" ? index - 1 : index + 1;
   if (swapIndex < 0 || swapIndex >= images.length) return;

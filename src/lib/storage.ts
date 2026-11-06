@@ -1,4 +1,4 @@
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+import { MEDIA_PREFIX } from "@/lib/d1/media-path";
 
 export const BUCKETS = {
   previews: "font-previews",
@@ -6,7 +6,7 @@ export const BUCKETS = {
   masters: "font-masters", // private — never resolve a public URL for this
 } as const;
 
-/** Public URL for an object in a public bucket. */
+/** Public URL for an object in a public bucket (served by the /media route from R2). */
 export function publicStorageUrl(bucket: string, path: string): string {
-  return `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${path}`;
+  return `${MEDIA_PREFIX}/${bucket}/${path}`;
 }

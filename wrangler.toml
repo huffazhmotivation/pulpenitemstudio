@@ -7,11 +7,22 @@ compatibility_flags = ["nodejs_compat"]
 directory = ".open-next/assets"
 binding = "ASSETS"
 
-# Optional: bind a KV namespace for Next.js incremental cache.
-# Create with: wrangler kv namespace create NEXT_CACHE
-# [[kv_namespaces]]
-# binding = "NEXT_CACHE_WORKERS_KV"
-# id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+# Content + admin accounts (Cloudflare D1, free tier).
+# Create once with: npx wrangler d1 create pulpenitem-studio
+# then paste the printed database_id below.
+[[d1_databases]]
+binding = "DB"
+database_name = "pulpenitem-studio"
+database_id = "REPLACE_WITH_DATABASE_ID"
+migrations_dir = "migrations"
+
+# Font previews, gallery images and private master files (Cloudflare R2, free tier).
+# Create once with: npx wrangler r2 bucket create pulpenitem-media
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "pulpenitem-media"
 
 [vars]
 NEXT_PUBLIC_SITE_URL = "https://pulpenitem.studio"
+
+# Secret (never commit): npx wrangler secret put AUTH_SECRET

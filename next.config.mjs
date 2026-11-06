@@ -4,10 +4,10 @@ initOpenNextCloudflareForDev();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Images are served as-is from R2 through /media (no Next image optimizer,
+  // which would need a paid Cloudflare Images binding).
   images: {
-    remotePatterns: [
-      { protocol: "https", hostname: "**.supabase.co" },
-    ],
+    unoptimized: true,
   },
   experimental: {
     serverActions: {

@@ -1,5 +1,5 @@
 import { requireAdmin } from "@/lib/auth";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient } from "@/lib/db";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Button } from "@/components/ui/Button";
@@ -16,7 +16,7 @@ export default async function AdminCategoriesPage() {
       <h1 className="mb-10 font-display text-3xl text-ink">Categories</h1>
 
       <div className="space-y-4 mb-12">
-        {(categories ?? []).map((cat) => (
+        {(categories ?? []).map((cat: any) => (
           <form
             key={cat.id}
             action={updateCategory.bind(null, cat.id)}

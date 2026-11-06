@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient } from "@/lib/db";
 import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/Button";
 import { formatPrice } from "@/lib/utils";

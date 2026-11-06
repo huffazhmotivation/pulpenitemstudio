@@ -1,16 +1,18 @@
 // Extends the ambient `CloudflareEnv` interface declared by
-// `@opennextjs/cloudflare` with the app's own environment variables /
-// secrets, so `getCloudflareContext().env` is typed without casts.
-// Keep this in sync with wrangler.toml [vars] and the Cloudflare
-// dashboard Secrets (NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY,
-// SUPABASE_SERVICE_ROLE_KEY).
+// `@opennextjs/cloudflare` with this app's bindings, so
+// `getCloudflareContext().env` is typed. Keep in sync with wrangler.toml.
+
+import type { D1Database, R2Bucket } from "@cloudflare/workers-types";
 
 export {};
 
 declare global {
   interface CloudflareEnv {
-    NEXT_PUBLIC_SUPABASE_URL?: string;
-    NEXT_PUBLIC_SUPABASE_ANON_KEY?: string;
-    SUPABASE_SERVICE_ROLE_KEY?: string;
+    /** Cloudflare D1 database (all content + admin accounts). */
+    DB: D1Database;
+    /** Cloudflare R2 bucket (font previews, gallery images, private masters). */
+    MEDIA: R2Bucket;
+    /** Secret used to sign admin session cookies (`wrangler secret put AUTH_SECRET`). */
+    AUTH_SECRET?: string;
   }
 }

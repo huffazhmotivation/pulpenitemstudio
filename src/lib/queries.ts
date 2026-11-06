@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, escapeLike } from "@/lib/db";
 import type {
   Category,
   FontWithRelations,
@@ -29,15 +29,15 @@ export async function getPublishedFonts(opts?: {
   categorySlug?: string;
   search?: string;
 }): Promise<FontWithRelations[]> {
-  const supabase = await createClient();
-  let query = supabase
+  const db = await createClient();
+  let query = db
     .from("fonts")
     .select(FONT_SELECT)
     .eq("status", "published")
     .order("created_at", { ascending: false });
 
   if (opts?.categorySlug) {
-    const { data: cat } = await supabase
+    const { data: cat } = await db
       .from("categories")
       .select("id")
       .eq("slug", opts.categorySlug)
@@ -46,9 +46,13 @@ export async function getPublishedFonts(opts?: {
   }
 
   if (opts?.search) {
-    query = query.or(
-      `name.ilike.%${opts.search}%,short_description.ilike.%${opts.search}%,tags.cs.{${opts.search}}`
-    );
+    // Commas/braces would break the or() expression; LIKE wildcards are escaped.
+    const term = opts.search.replace(/[,{}()]/g, " ").trim();
+    if (term) {
+      query = query.or(
+        `name.ilike.%${escapeLike(term)}%,short_description.ilike.%${escapeLike(term)}%,tags.cs.{${term}}`
+      );
+    }
   }
 
   const { data, error } = await query;
@@ -60,8 +64,8 @@ export async function getPublishedFonts(opts?: {
 }
 
 export async function getFeaturedFonts(limit = 4): Promise<FontWithRelations[]> {
-  const supabase = await createClient();
-  const { data } = await supabase
+  const db = await createClient();
+  const { data } = await db
     .from("fonts")
     .select(FONT_SELECT)
     .eq("status", "published")
@@ -72,9 +76,9 @@ export async function getFeaturedFonts(limit = 4): Promise<FontWithRelations[]> 
 }
 
 export async function getOnSaleFonts(limit = 8): Promise<FontWithRelations[]> {
-  const supabase = await createClient();
+  const db = await createClient();
   const nowIso = new Date().toISOString();
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from("fonts")
     .select(FONT_SELECT)
     .eq("status", "published")
@@ -92,8 +96,8 @@ export async function getOnSaleFonts(limit = 8): Promise<FontWithRelations[]> {
 }
 
 export async function getLatestFonts(limit = 8): Promise<FontWithRelations[]> {
-  const supabase = await createClient();
-  const { data } = await supabase
+  const db = await createClient();
+  const { data } = await db
     .from("fonts")
     .select(FONT_SELECT)
     .eq("status", "published")
@@ -105,8 +109,8 @@ export async function getLatestFonts(limit = 8): Promise<FontWithRelations[]> {
 export async function getFontBySlug(
   slug: string
 ): Promise<FontWithRelations | null> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
+  const db = await createClient();
+  const { data, error } = await db
     .from("fonts")
     .select(FONT_SELECT)
     .eq("slug", slug)
@@ -120,8 +124,8 @@ export async function getRelatedFonts(
   font: FontWithRelations,
   limit = 4
 ): Promise<FontWithRelations[]> {
-  const supabase = await createClient();
-  const { data } = await supabase
+  const db = await createClient();
+  const { data } = await db
     .from("fonts")
     .select(FONT_SELECT)
     .eq("status", "published")
@@ -139,11 +143,16 @@ export async function getRelatedFonts(
 export async function getShowcaseImages(limit = 9): Promise<
   { id: string; image_url: string; alt_text: string | null; font: { name: string; slug: string } }[]
 > {
-  const supabase = await createClient();
-  const { data, error } = await supabase
+  const db = await createClient();
+  const { data: fonts } = await db.from("fonts").select("id, name, slug").eq("status", "published");
+  const byId = new Map<string, { name: string; slug: string }>(
+    (fonts ?? []).map((f: any) => [f.id, { name: f.name, slug: f.slug }])
+  );
+  if (byId.size === 0) return [];
+  const { data, error } = await db
     .from("font_images")
-    .select("id, image_url, alt_text, font:fonts!inner(name, slug, status)")
-    .eq("font.status", "published")
+    .select("*")
+    .in("font_id", Array.from(byId.keys()).slice(0, 90))
     .order("created_at", { ascending: false })
     .limit(limit);
   if (error) {
@@ -154,13 +163,13 @@ export async function getShowcaseImages(limit = 9): Promise<
     id: row.id,
     image_url: row.image_url,
     alt_text: row.alt_text,
-    font: { name: row.font.name, slug: row.font.slug },
+    font: byId.get(row.font_id)!,
   }));
 }
 
 export async function getCategories(): Promise<Category[]> {
-  const supabase = await createClient();
-  const { data } = await supabase
+  const db = await createClient();
+  const { data } = await db
     .from("categories")
     .select("*")
     .order("sort_order", { ascending: true });
@@ -174,19 +183,19 @@ export async function getCategories(): Promise<Category[]> {
 export async function getCategoriesWithPreview(): Promise<
   (Category & { fontCount: number; previewImage: string | null })[]
 > {
-  const supabase = await createClient();
+  const db = await createClient();
   const [{ data: categories }, { data: fonts }] = await Promise.all([
-    supabase.from("categories").select("*").order("sort_order", { ascending: true }),
-    supabase
+    db.from("categories").select("*").order("sort_order", { ascending: true }),
+    db
       .from("fonts")
       .select("category_id, cover_image_url")
       .eq("status", "published")
       .not("category_id", "is", null),
   ]);
 
-  return (categories ?? []).map((cat) => {
-    const inCategory = (fonts ?? []).filter((f) => f.category_id === cat.id);
-    const withImage = inCategory.find((f) => f.cover_image_url);
+  return (categories ?? []).map((cat: any) => {
+    const inCategory = (fonts ?? []).filter((f: any) => f.category_id === cat.id);
+    const withImage = inCategory.find((f: any) => f.cover_image_url);
     return {
       ...cat,
       fontCount: inCategory.length,
@@ -196,8 +205,8 @@ export async function getCategoriesWithPreview(): Promise<
 }
 
 export async function getLicenses(): Promise<License[]> {
-  const supabase = await createClient();
-  const { data } = await supabase
+  const db = await createClient();
+  const { data } = await db
     .from("licenses")
     .select("*")
     .order("sort_order", { ascending: true });
@@ -205,8 +214,8 @@ export async function getLicenses(): Promise<License[]> {
 }
 
 export async function getSiteSettings(): Promise<SiteSettings> {
-  const supabase = await createClient();
-  const { data } = await supabase
+  const db = await createClient();
+  const { data } = await db
     .from("site_settings")
     .select("*")
     .eq("id", 1)
@@ -228,8 +237,8 @@ export async function getSiteSettings(): Promise<SiteSettings> {
 }
 
 export async function getHeroImages(): Promise<HeroImage[]> {
-  const supabase = await createClient();
-  const { data } = await supabase
+  const db = await createClient();
+  const { data } = await db
     .from("hero_images")
     .select("*")
     .order("sort_order", { ascending: true });
@@ -237,8 +246,8 @@ export async function getHeroImages(): Promise<HeroImage[]> {
 }
 
 export async function getHomepageSettings(): Promise<HomepageSettings> {
-  const supabase = await createClient();
-  const { data } = await supabase
+  const db = await createClient();
+  const { data } = await db
     .from("homepage_settings")
     .select("*")
     .eq("id", 1)
@@ -266,8 +275,8 @@ export async function getHomepageSettings(): Promise<HomepageSettings> {
  * kerning game. Deliberately tiny so it can run on every page.
  */
 export async function getGameFonts(limit = 8): Promise<{ name: string; woff2Path: string }[]> {
-  const supabase = await createClient();
-  const { data } = await supabase
+  const db = await createClient();
+  const { data } = await db
     .from("fonts")
     .select("name, files:font_files(file_type, storage_path)")
     .eq("status", "published")

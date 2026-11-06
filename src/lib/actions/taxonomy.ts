@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient } from "@/lib/db";
 import { slugify } from "@/lib/utils";
 
 // ---------------------------------------------------------------------

@@ -45,7 +45,7 @@ export default async function AdminLoginPage({
         </form>
 
         <p className="mt-8 text-xs text-ink-soft">
-          Admin accounts are created in the Supabase dashboard — see the README for setup.
+          Admin accounts are created with scripts/create-admin.mjs — see the README for setup.
         </p>
       </div>
     </div>
