@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 const ERROR_MESSAGES: Record<string, string> = {
   "invalid-credentials": "Incorrect email or password.",
   "not-authorized": "This account doesn't have admin access.",
+  "server-error": "Something went wrong on our side. Please try again.",
 };
 
 export default async function AdminLoginPage({

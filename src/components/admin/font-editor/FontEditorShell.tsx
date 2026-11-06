@@ -18,6 +18,7 @@ import { GalleryTab } from "./GalleryTab";
 import { FontFilesTab } from "./FontFilesTab";
 import { PricingTab } from "./PricingTab";
 import { PublishTab } from "./PublishTab";
+import { FontPreviewPanel } from "./FontPreviewPanel";
 import { coreFieldsToFormData, fontToCoreFields, type CoreFields } from "./types";
 import { useSavedAction } from "./useSavedAction";
 
@@ -95,37 +96,53 @@ export function FontEditorShell({
         </a>
       </div>
 
+      <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_380px]">
+        <div className="min-w-0">
       <TabNav tabs={TABS} active={activeTab} onChange={setActiveTab} />
-
-      <div className={activeTab === "basic" ? "block" : "hidden"}>
-        <BasicTab values={values} setValue={setValue} categories={categories} />
-      </div>
-      <div className={activeTab === "gallery" ? "block" : "hidden"}>
-        <GalleryTab fontId={font.id} images={images} coverImageUrl={font.cover_image_url} />
-      </div>
-      <div className={activeTab === "files" ? "block" : "hidden"}>
-        <FontFilesTab fontId={font.id} styles={styles} files={files} />
-      </div>
-      <div className={activeTab === "pricing" ? "block" : "hidden"}>
-        <PricingTab
-          fontId={font.id}
-          values={values}
-          setValue={setValue}
-          licenses={licenses}
-          licensePrices={licensePrices}
-        />
-      </div>
-      <div className={activeTab === "publish" ? "block" : "hidden"}>
-        <PublishTab
-          values={values}
-          fontId={font.id}
-          hasCover={hasCover}
-          hasStyle={hasStyle}
-          hasPreviewFile={hasPreviewFile}
-          onSaveDraft={() => save("draft")}
-          onPublish={() => save("published")}
-          saving={core.isPending}
-        />
+  
+        <div className={activeTab === "basic" ? "block" : "hidden"}>
+          <BasicTab values={values} setValue={setValue} categories={categories} />
+        </div>
+        <div className={activeTab === "gallery" ? "block" : "hidden"}>
+          <GalleryTab fontId={font.id} images={images} coverImageUrl={font.cover_image_url} />
+        </div>
+        <div className={activeTab === "files" ? "block" : "hidden"}>
+          <FontFilesTab fontId={font.id} styles={styles} files={files} />
+        </div>
+        <div className={activeTab === "pricing" ? "block" : "hidden"}>
+          <PricingTab
+            fontId={font.id}
+            values={values}
+            setValue={setValue}
+            licenses={licenses}
+            licensePrices={licensePrices}
+          />
+        </div>
+        <div className={activeTab === "publish" ? "block" : "hidden"}>
+          <PublishTab
+            values={values}
+            fontId={font.id}
+            hasCover={hasCover}
+            hasStyle={hasStyle}
+            hasPreviewFile={hasPreviewFile}
+            onSaveDraft={() => save("draft")}
+            onPublish={() => save("published")}
+            saving={core.isPending}
+          />
+        </div>
+        </div>
+        <div className="min-w-0 xl:sticky xl:top-24 xl:self-start">
+          <FontPreviewPanel
+        fontId={font.id}
+        values={values}
+        categories={categories}
+        styles={styles}
+        files={files}
+        images={images}
+        coverImageUrl={font.cover_image_url}
+        licensePrices={licensePrices}
+      />
+        </div>
       </div>
     </div>
   );

@@ -14,24 +14,33 @@ export async function signIn(formData: FormData) {
   // Only allow same-site relative redirects.
   const next = rawNext.startsWith("/admin") && !rawNext.startsWith("//") ? rawNext : "/admin";
 
-  const db = await createAdminClient();
-  const { data: profile } = await db
-    .from("admin_profiles")
-    .select("id, password_hash")
-    .eq("email", email)
-    .maybeSingle();
+  let failure: string | null = null;
+  try {
+    const db = await createAdminClient();
+    const { data: profile } = await db
+      .from("admin_profiles")
+      .select("id, password_hash")
+      .eq("email", email)
+      .maybeSingle();
 
-  const ok = await verifyPassword(password, profile?.password_hash);
-  if (!ok || !profile) redirect("/admin/login?error=invalid-credentials");
-
-  const store = await cookies();
-  store.set(SESSION_COOKIE, await createSessionToken(profile.id), {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: SESSION_MAX_AGE,
-  });
+    const ok = await verifyPassword(password, profile?.password_hash);
+    if (!ok || !profile) {
+      failure = "invalid-credentials";
+    } else {
+      const store = await cookies();
+      store.set(SESSION_COOKIE, await createSessionToken(profile.id), {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: SESSION_MAX_AGE,
+      });
+    }
+  } catch (e) {
+    console.error("signIn failed", e);
+    failure = "server-error";
+  }
+  if (failure) redirect(`/admin/login?error=${encodeURIComponent(failure)}`);
 
   redirect(next);
 }

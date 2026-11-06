@@ -32,10 +32,10 @@ export function Header({ settings }: { settings: SiteSettings }) {
     <header className="relative mx-auto flex h-[84px] w-full max-w-grid items-center gap-3 px-4 sm:gap-5 sm:px-6 md:px-10">
       <Link href="/" aria-label={settings.studio_name} className="flex shrink-0 items-center">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo-mark.png" alt="" width={134} height={147} className="h-9 w-auto sm:hidden" />
+        <img src="/logo-mark-mono.png" alt="" width={134} height={147} className="h-9 w-auto sm:hidden" />
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/logo-pulpenitem-dark.png"
+          src="/logo-mono.png"
           alt={settings.studio_name}
           width={1126}
           height={147}
