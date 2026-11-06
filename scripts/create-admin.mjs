@@ -11,11 +11,47 @@ import { spawnSync } from "node:child_process";
 
 const args = process.argv.slice(2);
 const remote = args.includes("--remote");
-const [email, password] = args.filter((a) => !a.startsWith("--"));
+const [email, passwordArg] = args.filter((a) => !a.startsWith("--"));
 
-if (!email || !password) {
-  console.error("Usage: node scripts/create-admin.mjs <email> <password> [--remote]");
+if (!email) {
+  console.error("Usage: node scripts/create-admin.mjs <email> [password] [--remote]\n(Leave the password out to be asked for it with hidden input.)");
   process.exit(1);
+}
+
+// Ask for the password without echoing it, so it never lands in shell history or chat.
+async function promptHidden(label) {
+  if (!process.stdin.isTTY) throw new Error("No terminal available: pass the password as an argument.");
+  process.stdout.write(label);
+  process.stdin.setRawMode(true);
+  process.stdin.resume();
+  process.stdin.setEncoding("utf8");
+  return new Promise((resolve) => {
+    let value = "";
+    process.stdin.on("data", function onData(ch) {
+      for (const c of ch) {
+        if (c === "\r" || c === "\n") {
+          process.stdin.setRawMode(false);
+          process.stdin.pause();
+          process.stdin.removeListener("data", onData);
+          process.stdout.write("\n");
+          return resolve(value);
+        }
+        if (c === "\u0003") process.exit(130);
+        if (c === "\u007f") value = value.slice(0, -1);
+        else value += c;
+      }
+    });
+  });
+}
+
+let password = passwordArg;
+if (!password) {
+  password = await promptHidden("New admin password (min 10 chars): ");
+  const again = await promptHidden("Repeat password: ");
+  if (password !== again) {
+    console.error("Passwords do not match.");
+    process.exit(1);
+  }
 }
 if (password.length < 10) {
   console.error("Use a password of at least 10 characters.");
