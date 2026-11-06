@@ -38,7 +38,10 @@ if (!SUPABASE_URL || !KEY) {
 const OUT = "migration-out";
 const R2_BUCKET = "pulpenitem-media";
 const BUCKETS = ["font-previews", "font-images", "font-masters"];
-const headers = { apikey: KEY, Authorization: `Bearer ${KEY}` };
+// New-style publishable/secret keys (sb_...) are not JWTs: send them as apikey only.
+// A publishable key can only read what RLS exposes publicly (published fonts,
+// public buckets); the service_role key reads everything.
+const headers = KEY.startsWith("sb_") ? { apikey: KEY } : { apikey: KEY, Authorization: `Bearer ${KEY}` };
 
 // D1 columns per table, in foreign-key-safe import order.
 const TABLES = [
@@ -168,7 +171,13 @@ console.log(`Wrote ${sqlPath} (${statements.length - 1} statements)`);
 const objects = [];
 if (!skipFiles) {
   for (const bucket of BUCKETS) {
-    const paths = await listObjects(bucket);
+    let paths = [];
+    try {
+      paths = await listObjects(bucket);
+    } catch (e) {
+      console.warn(`${bucket}: cannot list (${e.message.slice(0, 120)}) — skipped`);
+      continue;
+    }
     console.log(`${bucket}: ${paths.length} objects`);
     for (const path of paths) {
       const url = `${SUPABASE_URL}/storage/v1/object/${bucket}/${path.split("/").map(encodeURIComponent).join("/")}`;
