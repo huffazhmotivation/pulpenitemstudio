@@ -15,16 +15,6 @@ const NAV = [
   { href: "/contact", label: "Contact" },
 ];
 
-function Mark() {
-  return (
-    <svg viewBox="0 0 34 34" aria-hidden className="h-9 w-9">
-      <rect width="34" height="34" rx="11" fill="#2D6BF3" />
-      <path d="M9.5 24.5l1.3-4.6L21 9.5l3.5 3.5L14.1 23.2z" fill="#fff" />
-      <path d="M9.5 24.5l1.3-4.6 3.3 3.3z" fill="#FFD84D" />
-    </svg>
-  );
-}
-
 export function Header({ settings }: { settings: SiteSettings }) {
   const pathname = usePathname();
   const [menu, setMenu] = useState(false);
@@ -40,9 +30,17 @@ export function Header({ settings }: { settings: SiteSettings }) {
 
   return (
     <header className="relative mx-auto flex h-[84px] w-full max-w-grid items-center gap-3 px-4 sm:gap-5 sm:px-6 md:px-10">
-      <Link href="/" className="flex items-center gap-2.5 text-[19px] font-extrabold tracking-tight text-ink">
-        <Mark />
-        <span className="hidden sm:inline md:hidden lg:inline">{settings.studio_name}</span>
+      <Link href="/" aria-label={settings.studio_name} className="flex shrink-0 items-center">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/logo-mark.png" alt="" width={134} height={147} className="h-9 w-auto sm:hidden" />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/logo-pulpenitem-dark.png"
+          alt={settings.studio_name}
+          width={1126}
+          height={147}
+          className="hidden h-7 w-auto sm:block md:h-6 lg:h-7"
+        />
       </Link>
 
       <nav aria-label="Main" className="mx-auto hidden rounded-full bg-panel p-1.5 shadow-card md:flex">
