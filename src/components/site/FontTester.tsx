@@ -34,8 +34,8 @@ export function FontTester({ fontSlug, styles, files, defaultText, fallbackWoff2
     : fallbackWoff2Url;
 
   return (
-    <div className="rounded-lg border border-line overflow-hidden">
-      <div className="min-h-[220px] w-full overflow-hidden border-b border-line bg-panel px-6 py-10">
+    <div className="overflow-hidden rounded-2xl bg-panel shadow-card">
+      <div className="min-h-[240px] w-full overflow-hidden px-6 py-10 sm:px-10">
         <LiveFontPreview
           fontFamily={`tester-${fontSlug}`}
           woff2Url={woff2Url}
@@ -48,40 +48,34 @@ export function FontTester({ fontSlug, styles, files, defaultText, fallbackWoff2
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-[2fr_1fr_1fr]">
+      <div className="grid grid-cols-1 gap-5 bg-panel-2 p-5 sm:p-6 md:grid-cols-[2fr_1fr_1fr]">
         <div>
-          <label className="eyebrow mb-1.5 block">
-            Preview text
-          </label>
+          <label className="eyebrow mb-1.5 block">Preview text</label>
           <input
             value={text}
             onChange={(e) => setText(e.target.value)}
-            className="w-full rounded-md border border-line bg-transparent px-3 py-2 text-sm text-ink focus:outline-none focus:border-ink"
+            className="h-11 w-full rounded-full bg-panel px-5 text-sm text-ink ring-1 ring-inset ring-line hover:ring-ink-faint focus:outline-none focus:ring-2 focus:ring-signal"
           />
         </div>
 
         <div>
-          <label className="eyebrow mb-1.5 block">
-            Size — {size}px
-          </label>
+          <label className="eyebrow mb-1.5 block">Size · {size}px</label>
           <input
             type="range"
             min={12}
             max={160}
             value={size}
             onChange={(e) => setSize(Number(e.target.value))}
-            className="w-full accent-signal"
+            className="mt-3 w-full accent-ink"
           />
         </div>
 
         <div>
-          <label className="eyebrow mb-1.5 block">
-            Style
-          </label>
+          <label className="eyebrow mb-1.5 block">Style</label>
           <select
             value={styleId}
             onChange={(e) => setStyleId(e.target.value)}
-            className="w-full rounded-md border border-line bg-paper px-3 py-2 text-sm text-ink focus:outline-none focus:border-ink"
+            className="h-11 w-full rounded-full bg-panel px-4 text-sm text-ink ring-1 ring-inset ring-line hover:ring-ink-faint focus:outline-none focus:ring-2 focus:ring-signal"
           >
             {sortedStyles.map((s) => (
               <option key={s.id} value={s.id}>

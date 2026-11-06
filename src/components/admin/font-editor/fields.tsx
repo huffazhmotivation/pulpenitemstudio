@@ -18,7 +18,7 @@ export function Card({
   action?: ReactNode;
 }) {
   return (
-    <section className={cn("rounded-lg border border-line bg-panel p-6", className)}>
+    <section className={cn("rounded-2xl bg-panel p-6 shadow-card", className)}>
       {(title || action) && (
         <div className="mb-5 flex items-start justify-between gap-4 border-b border-line pb-4">
           <div>
@@ -42,7 +42,7 @@ export function FieldLabel({ children, htmlFor }: { children: ReactNode; htmlFor
   return (
     <label
       htmlFor={htmlFor}
-      className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-soft"
+      className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.08em] text-ink-faint"
     >
       {children}
     </label>
@@ -69,14 +69,14 @@ export function Toggle({
         aria-checked={checked}
         onClick={() => onChange(!checked)}
         className={cn(
-          "relative h-5 w-9 shrink-0 rounded-full border transition-colors",
-          checked ? "border-ink bg-ink" : "border-line bg-paper"
+          "relative h-6 w-11 shrink-0 rounded-full transition-colors",
+          checked ? "bg-signal" : "bg-line"
         )}
       >
         <span
           className={cn(
-            "absolute top-0.5 h-3.5 w-3.5 rounded-full transition-transform",
-            checked ? "translate-x-4 bg-paper" : "translate-x-0.5 bg-ink-soft"
+            "absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform",
+            checked ? "translate-x-[22px]" : "translate-x-0.5"
           )}
         />
       </button>
@@ -87,7 +87,7 @@ export function Toggle({
 
 export function EmptyState({ children }: { children: ReactNode }) {
   return (
-    <p className="rounded-md border border-dashed border-line bg-paper/60 px-4 py-8 text-center text-xs text-ink-soft">
+    <p className="rounded-xl border border-dashed border-line bg-paper/60 px-4 py-8 text-center text-xs text-ink-soft">
       {children}
     </p>
   );

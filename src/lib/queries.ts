@@ -260,3 +260,23 @@ export async function getHomepageSettings(): Promise<HomepageSettings> {
     }
   );
 }
+
+/**
+ * A few published fonts (name + public preview file URL only) for the footer's
+ * kerning game. Deliberately tiny so it can run on every page.
+ */
+export async function getGameFonts(limit = 8): Promise<{ name: string; woff2Path: string }[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("fonts")
+    .select("name, files:font_files(file_type, storage_path)")
+    .eq("status", "published")
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  const out: { name: string; woff2Path: string }[] = [];
+  for (const f of (data ?? []) as { name: string; files: { file_type: string; storage_path: string }[] | null }[]) {
+    const prev = (f.files ?? []).find((x) => x.file_type === "preview");
+    if (prev) out.push({ name: f.name, woff2Path: prev.storage_path });
+  }
+  return out;
+}

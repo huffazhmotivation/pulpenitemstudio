@@ -20,7 +20,7 @@ export default async function AdminCategoriesPage() {
           <form
             key={cat.id}
             action={updateCategory.bind(null, cat.id)}
-            className="grid grid-cols-1 gap-3 border border-line p-4 sm:grid-cols-[1fr_1fr_2fr_80px_auto_auto]"
+            className="grid grid-cols-1 gap-3 rounded-xl bg-panel shadow-card p-4 sm:grid-cols-[1fr_1fr_2fr_80px_auto_auto]"
           >
             <Input name="name" defaultValue={cat.name} placeholder="Name" required />
             <Input name="slug" defaultValue={cat.slug} placeholder="slug" />

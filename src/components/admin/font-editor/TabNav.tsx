@@ -18,7 +18,7 @@ export function TabNav({
   onChange: (id: string) => void;
 }) {
   return (
-    <div className="mb-6 flex gap-1 overflow-x-auto border-b border-line">
+    <div className="mb-6 flex w-fit max-w-full gap-1 overflow-x-auto rounded-full bg-panel p-1.5 shadow-card">
       {tabs.map((tab, i) => {
         const isActive = tab.id === active;
         return (
@@ -28,13 +28,13 @@ export function TabNav({
             disabled={tab.locked}
             onClick={() => onChange(tab.id)}
             className={cn(
-              "relative shrink-0 whitespace-nowrap px-4 py-3 text-sm font-medium transition-colors",
-              isActive ? "text-ink" : "text-ink-soft hover:text-ink",
+              "relative shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition-colors",
+              isActive ? "bg-ink text-white" : "text-ink-soft hover:text-ink",
               tab.locked && "cursor-not-allowed text-ink-faint hover:text-ink-faint"
             )}
           >
             <span className="flex items-center gap-1.5">
-              <span className="text-xs text-ink-faint">{i + 1}.</span>
+              <span className={isActive ? "text-xs text-white/60" : "text-xs text-ink-faint"}>{i + 1}</span>
               {tab.label}
               {tab.locked && (
                 <svg width="11" height="11" viewBox="0 0 16 16" fill="none" className="text-ink-faint">
@@ -43,7 +43,6 @@ export function TabNav({
                 </svg>
               )}
             </span>
-            {isActive && <span className="absolute inset-x-0 -bottom-px h-[2px] bg-ink" />}
           </button>
         );
       })}

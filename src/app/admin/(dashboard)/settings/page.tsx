@@ -20,7 +20,7 @@ export default async function AdminSettingsPage() {
         power the order buttons on every font page.
       </p>
 
-      <form action={updateSiteSettings} className="max-w-xl space-y-6 border border-line p-6">
+      <form action={updateSiteSettings} className="max-w-xl space-y-6 rounded-xl bg-panel shadow-card p-6">
         <div>
           <Label htmlFor="studio_name">Studio name</Label>
           <Input id="studio_name" name="studio_name" defaultValue={settings?.studio_name} required />

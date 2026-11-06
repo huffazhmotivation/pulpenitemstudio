@@ -1,14 +1,15 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import { FontGallery } from "@/components/site/FontGallery";
+import { FontGrid } from "@/components/site/FontGrid";
 import { FontTester } from "@/components/site/FontTester";
 import { GlyphPreview } from "@/components/site/GlyphPreview";
-import { OrderButtons } from "@/components/site/OrderButtons";
-import { RelatedFonts } from "@/components/site/RelatedFonts";
 import { LiveFontPreview } from "@/components/site/LiveFontPreview";
-import { ProductGallery } from "@/components/site/ProductGallery";
-import { Badge, StampBadge } from "@/components/ui/Badge";
+import { tintFor } from "@/components/site/FontMockup";
+import { OrderRail } from "@/components/site/OrderRail";
 import { getFontBySlug, getRelatedFonts, getSiteSettings } from "@/lib/queries";
 import { publicStorageUrl, BUCKETS } from "@/lib/storage";
-import { formatPrice, isSaleActive, getDiscountPercent } from "@/lib/utils";
+import { getDiscountPercent, isSaleActive } from "@/lib/utils";
 import type { Metadata } from "next";
 
 export async function generateMetadata({
@@ -25,6 +26,15 @@ export async function generateMetadata({
   };
 }
 
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section>
+      <h2 className="mb-4 text-2xl font-extrabold tracking-[-0.03em] text-ink">{title}</h2>
+      {children}
+    </section>
+  );
+}
+
 export default async function FontDetailPage({
   params,
 }: {
@@ -34,153 +44,108 @@ export default async function FontDetailPage({
   const font = await getFontBySlug(slug);
   if (!font) notFound();
 
-  const [related, settings] = await Promise.all([
-    getRelatedFonts(font),
-    getSiteSettings(),
-  ]);
+  const [related, settings] = await Promise.all([getRelatedFonts(font), getSiteSettings()]);
 
   const regularPreview = font.files.find((f) => f.file_type === "preview");
   const woff2Url = regularPreview ? publicStorageUrl(BUCKETS.previews, regularPreview.storage_path) : null;
+
+  // The cover first, then the gallery, without repeating the cover.
   const gallery = [...font.images].sort((a, b) => a.sort_order - b.sort_order).slice(0, 10);
+  const images = [
+    ...(font.cover_image_url && !gallery.some((g) => g.image_url === font.cover_image_url)
+      ? [{ src: font.cover_image_url, alt: `${font.name} cover` }]
+      : []),
+    ...gallery.map((g) => ({ src: g.image_url, alt: g.alt_text ?? font.name })),
+  ];
+
   const fileFormats = Array.from(
     new Set(font.files.filter((f) => f.file_type === "preview").map((f) => f.format.toUpperCase()))
   );
-  const masterFormatsNote = "OTF · TTF (delivered after order)";
 
   const onSale = isSaleActive(font);
   const fromPrice =
-    font.license_prices.length > 0
-      ? Math.min(...font.license_prices.map((lp) => lp.price))
-      : font.price;
+    font.license_prices.length > 0 ? Math.min(...font.license_prices.map((lp) => lp.price)) : font.price;
   const discount = onSale ? getDiscountPercent(fromPrice, font.sale_price as number) : 0;
+  const category = font.category?.name ?? "Uncategorised";
+  const sortedStyles = [...font.styles].sort((a, b) => a.sort_order - b.sort_order);
+
+  const facts: [string, string][] = [
+    ["Designer", font.designer ?? "—"],
+    ["Released", font.release_year ? String(font.release_year) : "—"],
+    ["Version", font.version ?? "—"],
+    ["Styles", String(font.styles.length)],
+    ["Delivered", "OTF · TTF after order"],
+    ["Preview files", fileFormats.join(", ") || "—"],
+  ];
 
   return (
-    <div className="mx-auto max-w-grid px-6 py-10 md:px-10 md:py-14">
-      <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1fr_360px]">
-        <div className="space-y-14">
-          {/* 1. Product name + price/license/order buttons */}
-          <section>
-            <div className="mb-4 flex flex-wrap items-center gap-2">
-              <Badge>{font.category?.name ?? "Uncategorised"}</Badge>
-              {font.is_new && <StampBadge variant="new">New</StampBadge>}
-              {onSale && <StampBadge variant="sale">{discount}% off</StampBadge>}
-              {font.is_featured && !onSale && <StampBadge variant="featured">Featured</StampBadge>}
-            </div>
+    <div className="mx-auto max-w-grid px-4 pb-4 sm:px-6 md:px-10">
+      <nav aria-label="Breadcrumb" className="mb-5 flex flex-wrap items-center gap-2 text-[13px] font-medium text-ink-soft">
+        <Link href="/fonts" className="hover:text-ink">Fonts</Link>
+        <span className="text-ink-faint">/</span>
+        <span>{category}</span>
+        <span className="text-ink-faint">/</span>
+        <span className="text-ink">{font.name}</span>
+      </nav>
+
+      <div className="grid gap-7 lg:grid-cols-[minmax(0,1fr)_380px]">
+        <div className="grid min-w-0 gap-14">
+          <FontGallery
+            fontName={font.name}
+            category={category}
+            tint={tintFor(font.slug)}
+            woff2Url={woff2Url}
+            images={images}
+          />
+
+          <Section title="About this typeface">
             <LiveFontPreview
               fontFamily={`preview-${font.slug}`}
               woff2Url={woff2Url}
               text={font.name}
               eager
-              as="h1"
-              className="text-ink [font-size:clamp(2.25rem,6vw,4.25rem)] leading-[1.02] tracking-tight break-words"
+              as="p"
+              className="mb-4 text-ink [font-size:clamp(2rem,4.5vw,3.25rem)] leading-[1.05] break-words"
             />
-            {font.short_description && (
-              <p className="mt-4 max-w-2xl text-base text-ink-soft md:text-lg">{font.short_description}</p>
-            )}
-
-            <div className="mt-6 flex flex-wrap items-baseline gap-3">
-              {onSale ? (
-                <>
-                  <span className="text-2xl font-semibold text-sale">
-                    {formatPrice(font.sale_price as number, font.currency)}
-                  </span>
-                  <span className="text-base text-ink-faint line-through">
-                    {formatPrice(fromPrice, font.currency)}
-                  </span>
-                </>
-              ) : (
-                <span className="text-2xl font-semibold text-ink">
-                  from {formatPrice(fromPrice, font.currency)}
-                </span>
-              )}
-            </div>
-
-            {/* Order buttons live in the sidebar on desktop; shown here first on mobile */}
-            <div className="mt-6 lg:hidden">
-              <OrderButtons
-                fontName={font.name}
-                fontSlug={font.slug}
-                currency={font.currency}
-                licensePrices={font.license_prices}
-                whatsappNumber={settings.whatsapp_number}
-                contactEmail={settings.contact_email}
-              />
-            </div>
-          </section>
-
-          {/* 2. Large product image gallery — main visual focus before the tester */}
-          {gallery.length > 0 && (
-            <section>
-              <ProductGallery images={gallery} fontName={font.name} />
-            </section>
-          )}
-
-          {/* 3. Description + font information */}
-          <section className="space-y-8">
+            {font.short_description && <p className="max-w-2xl text-base text-ink-soft md:text-lg">{font.short_description}</p>}
             {font.full_description && (
-              <div>
-                <p className="eyebrow mb-3">About this typeface</p>
-                <p className="max-w-3xl whitespace-pre-line text-base leading-relaxed text-ink-soft">
-                  {font.full_description}
-                </p>
+              <p className="mt-3 max-w-3xl whitespace-pre-line text-[15px] leading-relaxed text-ink-soft">{font.full_description}</p>
+            )}
+            <dl className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {facts.map(([k, v]) => (
+                <div key={k} className="rounded-xl bg-panel px-4 py-3.5 shadow-card">
+                  <dt className="eyebrow">{k}</dt>
+                  <dd className="mt-1 text-sm font-bold text-ink">{v}</dd>
+                </div>
+              ))}
+            </dl>
+            {(font.font_features.length > 0 || font.language_support.length > 0) && (
+              <div className="mt-6 grid gap-6 sm:grid-cols-2">
+                {font.font_features.length > 0 && (
+                  <div>
+                    <p className="eyebrow mb-2.5">OpenType features</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {font.font_features.map((f) => (
+                        <span key={f} className="rounded-full bg-panel px-3 py-1 text-xs font-semibold text-ink ring-1 ring-inset ring-line">{f}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {font.language_support.length > 0 && (
+                  <div>
+                    <p className="eyebrow mb-2.5">Language support</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {font.language_support.map((l) => (
+                        <span key={l} className="rounded-full bg-panel px-3 py-1 text-xs font-semibold text-ink ring-1 ring-inset ring-line">{l}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
-            <div className="grid grid-cols-2 gap-6 rounded-lg border border-line p-6 sm:grid-cols-4">
-              <div>
-                <p className="eyebrow">Designer</p>
-                <p className="mt-1 text-sm text-ink">{font.designer ?? "—"}</p>
-              </div>
-              <div>
-                <p className="eyebrow">Released</p>
-                <p className="mt-1 text-sm text-ink">{font.release_year ?? "—"}</p>
-              </div>
-              <div>
-                <p className="eyebrow">Version</p>
-                <p className="mt-1 text-sm text-ink">{font.version ?? "—"}</p>
-              </div>
-              <div>
-                <p className="eyebrow">Styles</p>
-                <p className="mt-1 text-sm text-ink">{font.styles.length}</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
-              <div>
-                <p className="eyebrow mb-3">OpenType features</p>
-                {font.font_features.length > 0 ? (
-                  <ul className="space-y-1.5 text-sm text-ink-soft">
-                    {font.font_features.map((f) => (
-                      <li key={f}>{f}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-sm text-ink-soft">—</p>
-                )}
-              </div>
-              <div>
-                <p className="eyebrow mb-3">Language support</p>
-                {font.language_support.length > 0 ? (
-                  <ul className="space-y-1.5 text-sm text-ink-soft">
-                    {font.language_support.map((l) => (
-                      <li key={l}>{l}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-sm text-ink-soft">—</p>
-                )}
-              </div>
-              <div>
-                <p className="eyebrow mb-3">File formats</p>
-                <ul className="space-y-1.5 text-sm text-ink-soft">
-                  <li>Preview: {fileFormats.join(", ") || "—"}</li>
-                  <li>Delivered: {masterFormatsNote}</li>
-                </ul>
-              </div>
-            </div>
-          </section>
+          </Section>
 
-          {/* 4. Interactive Font Tester */}
-          <section>
-            <p className="eyebrow mb-4">Test drive — editable specimen</p>
+          <Section title="Try it">
             <FontTester
               fontSlug={font.slug}
               styles={font.styles}
@@ -188,95 +153,62 @@ export default async function FontDetailPage({
               defaultText={font.default_preview_text ?? font.name}
               fallbackWoff2Url={woff2Url}
             />
-          </section>
+          </Section>
 
-          {/* 5. Font family / style previews */}
-          <section>
-            <p className="eyebrow mb-4">Family styles</p>
-            <div className="divide-y divide-line rounded-lg border border-line">
-              {[...font.styles]
-                .sort((a, b) => a.sort_order - b.sort_order)
-                .map((s) => {
-                  const styleFile = font.files.find(
-                    (f) => f.file_type === "preview" && f.style_id === s.id
-                  );
-                  const styleWoff2 = styleFile
-                    ? publicStorageUrl(BUCKETS.previews, styleFile.storage_path)
-                    : woff2Url;
-                  return (
-                    <div key={s.id} className="flex items-center justify-between gap-4 px-6 py-4">
-                      <LiveFontPreview
-                        fontFamily={`familystyle-${font.slug}-${s.id}`}
-                        woff2Url={styleWoff2}
-                        text={font.name}
-                        fontSize={30}
-                        weight={s.weight}
-                        italic={s.is_italic}
-                        className="text-ink"
-                      />
-                      <span className="shrink-0 text-xs text-ink-soft">
-                        {s.name}
-                      </span>
-                    </div>
-                  );
-                })}
+          <Section title="Styles">
+            <div className="divide-y divide-line overflow-hidden rounded-2xl bg-panel shadow-card">
+              {sortedStyles.map((s) => {
+                const styleFile = font.files.find((f) => f.file_type === "preview" && f.style_id === s.id);
+                const styleWoff2 = styleFile ? publicStorageUrl(BUCKETS.previews, styleFile.storage_path) : woff2Url;
+                return (
+                  <div key={s.id} className="flex items-center justify-between gap-4 px-6 py-4">
+                    <LiveFontPreview
+                      fontFamily={`familystyle-${font.slug}-${s.id}`}
+                      woff2Url={styleWoff2}
+                      text={font.name}
+                      fontSize={32}
+                      weight={s.weight}
+                      italic={s.is_italic}
+                      className="min-w-0 truncate text-ink"
+                    />
+                    <span className="shrink-0 text-xs font-semibold text-ink-soft">{s.name}</span>
+                  </div>
+                );
+              })}
             </div>
-          </section>
+          </Section>
 
-          {/* 6. Glyphs and multilingual characters */}
-          <section>
-            <p className="eyebrow mb-4">Alphabet &amp; glyphs</p>
+          <Section title="Alphabet & glyphs">
             <GlyphPreview
               fontFamily={`preview-${font.slug}`}
               woff2Url={woff2Url}
               languageSupport={font.language_support}
             />
-          </section>
+          </Section>
         </div>
 
-        {/* Sidebar: purchase (desktop) */}
-        <aside className="hidden space-y-6 lg:sticky lg:top-24 lg:block lg:self-start">
-          <div>
-            <p className="eyebrow mb-3">License &amp; order</p>
-            <OrderButtons
-              fontName={font.name}
-              fontSlug={font.slug}
-              currency={font.currency}
-              licensePrices={font.license_prices}
-              whatsappNumber={settings.whatsapp_number}
-              contactEmail={settings.contact_email}
-            />
-            <p className="mt-3 text-xs text-ink-soft">
-              See <a href="/license" className="underline hover:text-ink">license terms</a> for full usage rights.
-            </p>
-          </div>
-
-          <div>
-            <p className="eyebrow mb-3">Family</p>
-            <ul className="divide-y divide-line rounded-lg border border-line text-sm">
-              {[...font.styles]
-                .sort((a, b) => a.sort_order - b.sort_order)
-                .map((s) => (
-                  <li key={s.id} className="flex items-center px-4 py-2.5">
-                    <span
-                      style={{ fontWeight: s.weight, fontStyle: s.is_italic ? "italic" : "normal" }}
-                      className="text-ink"
-                    >
-                      {s.name}
-                    </span>
-                  </li>
-                ))}
-            </ul>
-          </div>
-        </aside>
+        <OrderRail
+          fontName={font.name}
+          fontSlug={font.slug}
+          category={category}
+          styleCount={font.styles.length}
+          isNew={font.is_new}
+          discount={discount}
+          currency={font.currency}
+          licensePrices={font.license_prices}
+          whatsappNumber={settings.whatsapp_number}
+          contactEmail={settings.contact_email}
+        />
       </div>
 
-      {/* 7. Related Fonts */}
       {related.length > 0 && (
-        <div className="mt-20 border-t border-line pt-12">
-          <p className="eyebrow mb-4">Related fonts</p>
-          <RelatedFonts fonts={related} />
-        </div>
+        <section className="pt-20">
+          <div className="mb-6 flex items-end justify-between gap-4">
+            <h2 className="text-[clamp(1.6rem,3vw,2.2rem)] font-extrabold tracking-[-0.03em] text-ink">More typefaces</h2>
+            <Link href="/fonts" className="text-sm font-semibold text-ink underline underline-offset-4">View all</Link>
+          </div>
+          <FontGrid fonts={related} />
+        </section>
       )}
     </div>
   );

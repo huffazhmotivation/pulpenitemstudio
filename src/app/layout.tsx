@@ -1,28 +1,13 @@
 import type { Metadata } from "next";
-import { Inter, Manrope, Space_Grotesk } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { getSiteSettings } from "@/lib/queries";
 
-// Manrope for headings/display, Inter for body copy and UI chrome,
-// Space Grotesk for compact labels, prices, and license codes — a
-// geometric, slightly technical sans that keeps the minimal-futuristic
-// accent without reading as a monospace/terminal typeface.
-const manrope = Manrope({
+// One clean sans for the whole interface. The typefaces themselves are the
+// only loud thing on the page.
+const sans = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  variable: "--font-display",
-  display: "swap",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-body",
-  display: "swap",
-});
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-mono",
+  variable: "--font-sans",
   display: "swap",
 });
 
@@ -43,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${manrope.variable} ${inter.variable} ${spaceGrotesk.variable}`}>
+    <html lang="en" className={sans.variable}>
       <body className="flex min-h-screen flex-col bg-paper">{children}</body>
     </html>
   );

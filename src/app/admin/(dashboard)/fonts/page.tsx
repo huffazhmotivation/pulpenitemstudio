@@ -19,7 +19,7 @@ export default async function AdminFontsPage() {
       <div className="mb-8 flex items-center justify-between">
         <div>
           <p className="eyebrow-accent mb-3">Catalog</p>
-          <h1 className="font-display text-3xl text-ink">Fonts</h1>
+          <h1 className="text-4xl font-extrabold tracking-[-0.035em] text-ink">Fonts</h1>
           <p className="mt-1 text-sm text-ink-soft">
             {fonts?.length ?? 0} font{(fonts?.length ?? 0) === 1 ? "" : "s"} in the catalog
           </p>
@@ -27,8 +27,8 @@ export default async function AdminFontsPage() {
         <ButtonLink href="/admin/fonts/new">+ Add font</ButtonLink>
       </div>
 
-      <div className="border border-line">
-        <div className="grid grid-cols-[1fr_auto_auto_auto] gap-4 border-b border-line bg-paper-dim/50 px-4 py-3 font-mono text-[10px] uppercase tracking-[0.12em] text-ink-soft">
+      <div className="overflow-hidden rounded-2xl bg-panel shadow-card">
+        <div className="grid grid-cols-[1fr_auto_auto_auto] gap-4 border-b border-line bg-paper-dim/50 px-4 py-3 text-[11px] font-bold uppercase tracking-[0.08em] text-ink-faint">
           <span>Font</span>
           <span>Category</span>
           <span>Price</span>

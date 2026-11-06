@@ -1,4 +1,3 @@
-import { RegMark } from "@/components/site/CropMarks";
 import { getHomepageSettings, getSiteSettings } from "@/lib/queries";
 
 export const metadata = { title: "About" };
@@ -15,7 +14,6 @@ export default async function AboutPage() {
       <p className="mt-8 max-w-2xl text-lg text-ink-soft">{homepage.about_body}</p>
 
       <div className="relative mt-16 border-t border-line pt-12">
-        <RegMark className="absolute -left-2 top-10" />
         <div className="grid gap-10 md:grid-cols-3">
           <div>
             <p className="eyebrow mb-2">Studio</p>

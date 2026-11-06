@@ -21,11 +21,11 @@ export function GlyphPreview({
   languageSupport?: string[];
 }) {
   return (
-    <div className="divide-y divide-line rounded-lg border border-line">
+    <div className="divide-y divide-line overflow-hidden rounded-2xl bg-panel shadow-card">
       {ROWS.map((row) => (
         <div
           key={row.label}
-          className="grid grid-cols-1 gap-2 px-6 py-5 sm:grid-cols-[140px_1fr] sm:items-center sm:gap-6"
+          className="grid grid-cols-1 gap-2 px-6 py-5 sm:grid-cols-[140px_minmax(0,1fr)] sm:items-center sm:gap-6"
         >
           <p className="eyebrow">{row.label}</p>
           <LiveFontPreview
@@ -33,13 +33,13 @@ export function GlyphPreview({
             woff2Url={woff2Url}
             text={row.text}
             fontSize={row.size}
-            className="tracking-wide text-ink break-words"
+            className="min-w-0 tracking-wide text-ink [overflow-wrap:anywhere]"
           />
         </div>
       ))}
 
       {languageSupport.length > 0 && (
-        <div className="grid grid-cols-1 gap-2 px-6 py-5 sm:grid-cols-[140px_1fr] sm:items-center sm:gap-6">
+        <div className="grid grid-cols-1 gap-2 px-6 py-5 sm:grid-cols-[140px_minmax(0,1fr)] sm:items-center sm:gap-6">
           <div>
             <p className="eyebrow">Multilingual</p>
             <p className="mt-1 text-xs text-ink-soft">{languageSupport.join(", ")}</p>
@@ -49,7 +49,7 @@ export function GlyphPreview({
             woff2Url={woff2Url}
             text={MULTILINGUAL_SAMPLE}
             fontSize={28}
-            className="tracking-wide text-ink break-words"
+            className="min-w-0 tracking-wide text-ink [overflow-wrap:anywhere]"
           />
         </div>
       )}

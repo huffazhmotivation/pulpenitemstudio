@@ -5,7 +5,7 @@ export function Badge({ className, ...props }: HTMLAttributes<HTMLSpanElement>) 
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full border border-line px-2.5 py-1 text-[11px] font-medium text-ink-soft",
+        "inline-flex items-center rounded-full bg-paper-dim px-3 py-1 text-[11px] font-bold text-ink",
         className
       )}
       {...props}
@@ -16,10 +16,10 @@ export function Badge({ className, ...props }: HTMLAttributes<HTMLSpanElement>) 
 type StampVariant = "new" | "sale" | "featured" | "default";
 
 const stampStyles: Record<StampVariant, string> = {
-  new: "bg-ink text-paper",
-  featured: "bg-signal text-paper shadow-[0_0_14px_-2px_rgba(163,230,53,0.65)]",
-  sale: "bg-sale text-white",
-  default: "bg-paper text-ink border border-line",
+  new: "bg-ink text-white",
+  featured: "bg-signal text-white",
+  sale: "bg-yellow text-ink",
+  default: "bg-panel text-ink ring-1 ring-inset ring-line",
 };
 
 /** Small solid pill badge used on product cards and detail pages (NEW / SALE / FEATURED). */
@@ -28,7 +28,5 @@ export function StampBadge({
   className,
   ...props
 }: HTMLAttributes<HTMLSpanElement> & { variant?: StampVariant }) {
-  return (
-    <span className={cn("pill shadow-sm", stampStyles[variant], className)} {...props} />
-  );
+  return <span className={cn("pill", stampStyles[variant], className)} {...props} />;
 }

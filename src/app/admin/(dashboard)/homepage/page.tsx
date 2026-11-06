@@ -28,7 +28,7 @@ export default async function AdminHomepagePage() {
         automatically from fonts marked Featured or by publish date.
       </p>
 
-      <div className="mb-6 max-w-xl space-y-4 border border-line bg-panel p-4">
+      <div className="mb-6 max-w-xl space-y-4 rounded-xl bg-panel shadow-card bg-panel p-4">
         <Label>Hero gallery</Label>
         <p className="text-xs text-ink-soft">
           {HERO_IMAGE_GUIDANCE} Upload as many as you like — they auto-slide on the homepage, same as the
@@ -90,10 +90,10 @@ export default async function AdminHomepagePage() {
 
       <form
         action={updateHomepageSettings}
-        className="max-w-xl space-y-6 border border-line p-6"
+        className="max-w-xl space-y-6 rounded-xl bg-panel shadow-card p-6"
       >
         {homepage?.hero_image_url && (
-          <div className="space-y-3 border border-line bg-panel p-4">
+          <div className="space-y-3 rounded-xl bg-panel shadow-card bg-panel p-4">
             <Label htmlFor="hero_image_alt">Legacy hero image (fallback, only used if gallery above is empty)</Label>
             <div className="relative aspect-[16/9] w-full overflow-hidden rounded-md border border-line">
               <Image

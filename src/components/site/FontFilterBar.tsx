@@ -13,6 +13,7 @@ export function FontFilterBar({ categories }: { categories: Category[] }) {
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
 
   const activeCategory = searchParams.get("category");
+  const saleOnly = searchParams.get("sale");
 
   function pushParams(next: Record<string, string | null>) {
     const params = new URLSearchParams(searchParams.toString());
@@ -24,6 +25,12 @@ export function FontFilterBar({ categories }: { categories: Category[] }) {
       router.push(`${pathname}?${params.toString()}`);
     });
   }
+
+  const pill = (active: boolean) =>
+    cn(
+      "h-9 rounded-full px-4 text-[13px] font-semibold transition-colors",
+      active ? "bg-ink text-white" : "bg-panel text-ink-soft ring-1 ring-inset ring-line hover:text-ink hover:ring-ink-faint"
+    );
 
   return (
     <div className={cn("space-y-4", isPending && "opacity-70")}>
@@ -37,31 +44,19 @@ export function FontFilterBar({ categories }: { categories: Category[] }) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search fonts by name, tag, or keyword…"
-          className="w-full rounded-md border border-line bg-panel px-4 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-ink"
+          className="h-12 w-full rounded-full bg-panel px-6 text-sm text-ink ring-1 ring-inset ring-line placeholder:text-ink-faint hover:ring-ink-faint focus:outline-none focus:ring-2 focus:ring-signal"
         />
       </form>
 
-      <div className="flex flex-wrap gap-2 text-sm">
-        <button
-          onClick={() => pushParams({ category: null })}
-          className={cn(
-            "rounded-full border px-3.5 py-1.5 font-medium transition-colors",
-            !activeCategory ? "border-ink bg-ink text-paper" : "border-line text-ink-soft hover:border-ink"
-          )}
-        >
+      <div className="flex flex-wrap gap-2">
+        <button onClick={() => pushParams({ category: null, sale: null })} className={pill(!activeCategory && !saleOnly)}>
           All
         </button>
+        <button onClick={() => pushParams({ sale: saleOnly ? null : "1" })} className={pill(!!saleOnly)}>
+          On sale
+        </button>
         {categories.map((cat) => (
-          <button
-            key={cat.id}
-            onClick={() => pushParams({ category: cat.slug })}
-            className={cn(
-              "rounded-full border px-3.5 py-1.5 font-medium transition-colors",
-              activeCategory === cat.slug
-                ? "border-ink bg-ink text-paper"
-                : "border-line text-ink-soft hover:border-ink"
-            )}
-          >
+          <button key={cat.id} onClick={() => pushParams({ category: cat.slug })} className={pill(activeCategory === cat.slug)}>
             {cat.name}
           </button>
         ))}

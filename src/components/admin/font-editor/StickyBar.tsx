@@ -20,7 +20,7 @@ export function StickyBar({
   status: "draft" | "published";
 }) {
   return (
-    <div className="sticky top-0 z-30 -mx-6 -mt-10 mb-6 border-b border-line bg-panel/95 px-6 py-3.5 backdrop-blur md:-mx-10 md:-mt-14 md:px-10">
+    <div className="sticky top-0 z-30 mb-6 rounded-2xl bg-panel/95 px-5 py-3 shadow-card backdrop-blur">
       <div className="flex flex-wrap items-center gap-3">
         <Link
           href="/admin/fonts"
@@ -33,8 +33,8 @@ export function StickyBar({
           {fontName || "Untitled font"}
         </span>
         <span
-          className={`shrink-0 rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] ${
-            status === "published" ? "border-ink text-ink" : "border-line text-ink-soft"
+          className={`shrink-0 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] ${
+            status === "published" ? "bg-[#DDF5EC] text-[#12805C]" : "bg-paper-dim text-ink-soft"
           }`}
         >
           {status}
@@ -45,7 +45,7 @@ export function StickyBar({
             type="button"
             disabled={disabled}
             onClick={onSaveDraft}
-            className="rounded-md border border-ink px-4 py-2 text-xs font-semibold uppercase tracking-[0.04em] text-ink transition-colors hover:bg-ink hover:text-paper disabled:opacity-40"
+            className="rounded-full px-5 py-2.5 text-xs font-semibold text-ink ring-1 ring-inset ring-line transition-colors hover:ring-ink-faint disabled:opacity-40"
           >
             Save draft
           </button>
@@ -53,7 +53,7 @@ export function StickyBar({
             type="button"
             disabled={disabled}
             onClick={onPublish}
-            className="rounded-md border border-ink bg-ink px-4 py-2 text-xs font-semibold uppercase tracking-[0.04em] text-paper transition-colors hover:bg-signal-dim disabled:opacity-40"
+            className="rounded-full bg-ink px-5 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-ink/85 disabled:opacity-40"
           >
             Publish
           </button>

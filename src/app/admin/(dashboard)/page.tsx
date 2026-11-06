@@ -25,19 +25,22 @@ export default async function AdminHomePage() {
   return (
     <div>
       <p className="eyebrow-accent mb-3">Overview</p>
-      <h1 className="mb-1 font-display text-3xl text-ink">Dashboard</h1>
+      <h1 className="mb-1 text-4xl font-extrabold tracking-[-0.035em] text-ink">Dashboard</h1>
       <p className="mb-10 text-sm text-ink-soft">A quick read on the catalog and where to go next.</p>
 
-      <div className="mb-12 grid grid-cols-2 gap-4 md:grid-cols-4">
-        {stats.map((s) => (
-          <div key={s.label} className="border border-line p-5">
-            <p className="font-display text-4xl text-ink">{s.value}</p>
-            <p className="mt-2 eyebrow">{s.label}</p>
+      <div className="mb-10 grid grid-cols-2 gap-4 md:grid-cols-4">
+        {stats.map((s, i) => (
+          <div
+            key={s.label}
+            className={`rounded-2xl p-6 shadow-card ${["bg-[linear-gradient(135deg,#ECEEF1,#DCDFE5)]", "bg-panel", "bg-yellow-soft", "bg-panel"][i % 4]}`}
+          >
+            <p className="eyebrow">{s.label}</p>
+            <p className="mt-6 text-5xl font-extrabold tracking-[-0.04em] text-ink">{s.value}</p>
           </div>
         ))}
       </div>
 
-      <div className="border border-line p-6">
+      <div className="rounded-2xl bg-panel p-6 shadow-card">
         <p className="eyebrow mb-4">Quick actions</p>
         <div className="flex flex-wrap gap-3">
           <ButtonLink href="/admin/fonts/new">+ Add a font</ButtonLink>
