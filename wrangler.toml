@@ -13,7 +13,7 @@ binding = "ASSETS"
 [[d1_databases]]
 binding = "DB"
 database_name = "pulpenitem-studio"
-database_id = "REPLACE_WITH_DATABASE_ID"
+database_id = "aca1f1eb-afa3-4021-b37f-be8c61c137e3"
 migrations_dir = "migrations"
 
 # Font previews, gallery images and private master files (Cloudflare R2, free tier).
