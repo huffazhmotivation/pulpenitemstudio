@@ -1,6 +1,7 @@
 import { requireAdmin } from "@/lib/auth";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { ToastProvider } from "@/components/admin/Toast";
+import { SitePreviewDrawer } from "@/components/admin/SitePreviewDrawer";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +20,7 @@ export default async function AdminDashboardLayout({
           <div className="mx-auto max-w-6xl px-2 py-4 md:px-6 md:py-6">{children}</div>
         </div>
       </div>
+      <SitePreviewDrawer />
     </ToastProvider>
   );
 }
