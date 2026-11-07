@@ -1,0 +1,157 @@
+<title>Pulpenitem Preview Panel</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: admin editor on the left, slide-over site preview docked on the right. */
+:root{
+  --paper:#eeeeec; --panel:#ffffff; --paper-dim:#e4e4e1; --ink:#111111; --ink-soft:#5d5d59; --line:#dcdcd8; --signal:#abd904;
+  --shadow:0 18px 50px rgba(0,0,0,.16);
+  --font:"Plus Jakarta Sans",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--paper:#161616;--panel:#212121;--paper-dim:#2b2b2a;--ink:#f3f3f0;--ink-soft:#a5a5a0;--line:#363635;--shadow:0 18px 50px rgba(0,0,0,.5);color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#161616;--panel:#212121;--paper-dim:#2b2b2a;--ink:#f3f3f0;--ink-soft:#a5a5a0;--line:#363635;--shadow:0 18px 50px rgba(0,0,0,.5);color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--font);font-size:14px;padding-block:20px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+button,select,input{font:inherit;color:inherit}
+.wrap{max-width:1180px;margin:0 auto}
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:12px;justify-content:space-between;margin-bottom:16px}
+h1{font-size:22px;font-weight:800;letter-spacing:-.02em;margin:0}
+.hint{color:var(--ink-soft);font-size:13px;margin:4px 0 0}
+.btn{border:0;border-radius:999px;padding:10px 18px;font-weight:700;font-size:13px;cursor:pointer;background:var(--ink);color:var(--paper)}
+.btn:focus-visible,.seg button:focus-visible,select:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+.btn.ghost{background:var(--panel);color:var(--ink)}
+.stage{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:start}
+.stage.open{grid-template-columns:minmax(0,1fr) minmax(0,520px)}
+@media (max-width:860px){.stage.open{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--panel);border-radius:20px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.card h2{margin:0 0 14px;font-size:15px;font-weight:700}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.field label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+.field input,.field select{background:var(--paper);border:0;border-radius:12px;padding:11px 14px;min-width:0}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.toast{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--ink-soft);margin-left:10px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--signal);display:inline-block}
+.fab{position:sticky;bottom:16px;margin-top:16px;display:flex;justify-content:flex-end}
+.fab .btn{display:flex;gap:8px;align-items:center;box-shadow:var(--shadow);padding:12px 20px}
+/* drawer */
+.drawer{background:var(--panel);border-radius:24px;box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden;position:sticky;top:12px;height:min(720px,calc(100vh - 24px));min-height:480px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line)}
+.bar select{background:var(--paper);border:0;border-radius:999px;padding:7px 12px;font-size:12px;font-weight:700}
+.seg{display:flex;background:var(--paper);border-radius:999px;padding:3px}
+.seg button{border:0;background:none;border-radius:999px;padding:5px 12px;font-size:12px;font-weight:700;color:var(--ink-soft);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.sp{margin-left:auto;display:flex;gap:6px}
+.chip{border:0;background:var(--paper);color:var(--ink-soft);border-radius:999px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer}
+.x{width:30px;height:30px;border-radius:50%;border:0;background:var(--ink);color:var(--paper);cursor:pointer}
+.view{flex:1;min-height:0;background:var(--paper-dim);overflow:auto;position:relative;padding:12px}
+.loading{position:absolute;inset:0;display:grid;place-items:center;background:var(--paper-dim);font-weight:700;font-size:12px;color:var(--ink-soft);z-index:2}
+.loading[hidden]{display:none}
+.site{background:#f4f4f2;color:#111;border-radius:14px;overflow:hidden;margin:0 auto;transition:max-width .2s;font-size:12px;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+.site.desktop{max-width:100%}.site.mobile{max-width:280px}
+.sh{display:flex;align-items:center;justify-content:space-between;padding:12px 16px}
+.logo{font-weight:800;letter-spacing:-.03em;font-size:15px}.logo i{font-style:normal;color:#abd904}
+.nav{display:flex;gap:12px;font-weight:600;color:#555}
+.mobile .nav{display:none}
+.hero{padding:26px 16px 18px}
+.hero h3{margin:0;font-size:28px;line-height:1.05;letter-spacing:-.03em;font-weight:800}
+.mobile .hero h3{font-size:22px}
+.hero p{margin:8px 0 14px;color:#555}
+.pill{display:inline-block;background:#111;color:#fff;border-radius:999px;padding:8px 16px;font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:0 16px 18px}
+.mobile .grid{grid-template-columns:1fr}
+.fc{background:#fff;border-radius:12px;padding:8px 8px 10px}
+.fc .im{border-radius:8px;aspect-ratio:4/3;display:grid;place-items:center;font-size:26px;background:#e8e8e4}
+.fc b{display:block;margin-top:8px;font-size:13px}.fc span{color:#666}
+.fc .pr{margin-top:4px;font-weight:700;color:#111}
+.badge{display:inline-block;background:#abd904;color:#111;border-radius:999px;padding:1px 7px;font-size:10px;font-weight:800;margin-left:4px}
+.foot{padding:10px 14px;border-top:1px solid var(--line);font-size:11px;color:var(--ink-soft)}
+.cmt{font-size:12px;color:var(--ink-soft);margin:14px 0 0}
+</style>
+
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>Admin: edit font</h1>
+      <p class="hint">Mockup of the new Preview site panel. Change the name or price, press Save, and watch the panel reload.</p>
+    </div>
+    <button class="btn ghost" id="toggleTop" type="button">Toggle preview panel</button>
+  </div>
+
+  <div class="stage open" id="stage">
+    <div>
+      <div class="card">
+        <h2>Core details</h2>
+        <div class="field"><label for="name">Font name</label><input id="name" value="Kopi Susu Display"></div>
+        <div class="row">
+          <div class="field"><label for="price">Price (USD)</label><input id="price" type="number" value="24"></div>
+          <div class="field"><label for="cat">Category</label>
+            <select id="cat"><option>Display</option><option>Handwriting</option><option>Sans serif</option></select></div>
+        </div>
+        <div class="field"><label for="sale">Show "New" badge</label>
+          <select id="sale"><option value="1">Yes</option><option value="0">No</option></select></div>
+        <button class="btn" id="save" type="button">Save changes</button><span class="toast" id="toast"></span>
+      </div>
+      <p class="cmt">The real panel shows your live website in an iframe. This page is only a picture of how it behaves.</p>
+      <div class="fab" id="fab" hidden><button class="btn" id="open" type="button"><span class="dot"></span>Preview site</button></div>
+    </div>
+
+    <aside class="drawer" id="drawer" aria-label="Site preview">
+      <div class="bar">
+        <select id="page" aria-label="Page to preview"><option value="home">Home</option><option value="fonts">Fonts</option><option value="about">About</option><option value="license">License</option><option value="contact">Contact</option></select>
+        <div class="seg" role="group" aria-label="Device">
+          <button type="button" id="dDesk" aria-pressed="true">Desktop</button>
+          <button type="button" id="dMob" aria-pressed="false">Mobile</button>
+        </div>
+        <div class="sp">
+          <button class="chip" id="refresh" type="button">Refresh</button>
+          <button class="chip" type="button">Open ↗</button>
+          <button class="x" id="close" type="button" aria-label="Close preview">✕</button>
+        </div>
+      </div>
+      <div class="view">
+        <div class="loading" id="loading" hidden>Loading preview…</div>
+        <div class="site desktop" id="site"></div>
+      </div>
+      <div class="foot">Shows the live site. It refreshes by itself after you save a change.</div>
+    </aside>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let saved={name:"Kopi Susu Display",price:24,cat:"Display",isNew:true};
+const others=[["Warung Script",18,"Handwriting"],["Tahu Sans",32,"Sans serif"],["Becak Slab",21,"Display"]];
+function card(n,p,c,newB,i){const g=["#e8e8e4","#efe9d2","#dfe8d0","#e6dcd8"][i%4];
+  return `<div class="fc"><div class="im" style="background:${g}">Aa</div><b>${esc(n)}${newB?'<span class="badge">New</span>':''}</b><span>${esc(c)}</span><div class="pr">from $${p}</div></div>`}
+function render(){
+  const pg=$("page").value, f=saved;
+  let body="";
+  if(pg==="home"){
+    body=`<div class="hero"><h3>Fonts made for<br>everyday Indonesia.</h3><p>Display, script and sans typefaces by Pulpenitem Studio.</p><span class="pill">Browse fonts</span></div>
+    <div class="grid">${card(f.name,f.price,f.cat,f.isNew,0)}${others.map((o,i)=>card(o[0],o[1],o[2],false,i+1)).join("")}</div>`;
+  }else if(pg==="fonts"){
+    body=`<div class="hero"><h3>All fonts</h3><p>4 typefaces</p></div><div class="grid">${card(f.name,f.price,f.cat,f.isNew,0)}${others.map((o,i)=>card(o[0],o[1],o[2],false,i+1)).join("")}</div>`;
+  }else{
+    const t={about:"About the studio",license:"Licenses",contact:"Say hello"}[pg];
+    body=`<div class="hero"><h3>${t}</h3><p>This page reads from your Settings and Pages content.</p></div>`;
+  }
+  $("site").innerHTML=`<div class="sh"><span class="logo">pulpenitem<i>.</i></span><span class="nav"><span>Fonts</span><span>About</span><span>License</span></span></div>${body}`;
+}
+function reload(){$("loading").hidden=false;setTimeout(()=>{render();$("loading").hidden=true},700)}
+$("save").onclick=()=>{
+  saved={name:$("name").value||"Untitled font",price:Number($("price").value)||0,cat:$("cat").value,isNew:$("sale").value==="1"};
+  $("toast").innerHTML='<span class="dot"></span>Saved';
+  setTimeout(()=>$("toast").textContent="",1800);
+  if(!$("drawer").hidden) setTimeout(reload,700);
+};
+$("page").onchange=reload;
+$("refresh").onclick=reload;
+function dev(m){$("site").className="site "+m;$("dDesk").setAttribute("aria-pressed",m==="desktop");$("dMob").setAttribute("aria-pressed",m==="mobile")}
+$("dDesk").onclick=()=>dev("desktop");$("dMob").onclick=()=>dev("mobile");
+function setOpen(o){$("drawer").hidden=!o;$("fab").hidden=o;$("stage").classList.toggle("open",o)}
+$("close").onclick=()=>setOpen(false);$("open").onclick=()=>setOpen(true);
+$("toggleTop").onclick=()=>setOpen($("drawer").hidden);
+document.addEventListener("keydown",e=>{if(e.key==="Escape")setOpen(false)});
+render();
+</script>
